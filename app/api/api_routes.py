@@ -1,51 +1,69 @@
 # app/api/api_routes.py
 
-from flask import jsonify
+from flask import jsonify, request, abort, current_app
 from . import api
-from .. import mongo # Import the mongo instance from the app factory
+from .. import mongo
 
-@api.route('/map-data', methods=['GET'])
+@api.route('/map-data')
 def get_map_data():
     """
-    Provides all necessary data to initialize the main homepage map.
-    This includes all approved hotels.
+    Retrieves initial data for the main homepage map.
+    Fetches all approved hotels.
     """
     try:
-        # Access the 'hotels' collection from our MongoDB database
-        hotels_collection = mongo.db.hotels
-
-        # Define the fields we want to retrieve to keep the payload small.
-        # 1 means include, 0 means exclude.
-        projection = {
-            "_id": 1,
-            "name": 1,
-            "location": 1,
-            "is_featured": 1
-        }
-
-        # Find all hotels that have been approved by an admin
-        # and apply the projection.
-        approved_hotels = hotels_collection.find(
-            {"status": "approved"},
-            projection
-        )
-
-        # Prepare the list of hotels for the JSON response.
-        # We must convert the MongoDB '_id' (which is an ObjectId) to a string.
-        hotel_list = [
-            {
-                "_id": str(hotel['_id']),
-                "name": hotel.get('name'),
-                "location": hotel.get('location'),
-                "is_featured": hotel.get('is_featured', False)
-            }
-            for hotel in approved_hotels
-        ]
-
-        # Return the data in the specified format
-        return jsonify({"hotels": hotel_list})
-
+        hotels_cursor = mongo.db.hotels.find({'status': 'approved'})
+        hotels_list = []
+        for hotel in hotels_cursor:
+            hotel['_id'] = str(hotel['_id'])
+            hotels_list.append(hotel)
+        return jsonify({'hotels': hotels_list})
     except Exception as e:
-        # If there's any database error, return a 500 server error.
-        return jsonify({"error": "Could not connect to the database.", "details": str(e)}), 500
+        print(f"Error fetching map data: {e}")
+        return jsonify({'error': 'Could not fetch map data'}), 500
 
+@api.route('/hotels-in-view')
+def get_hotels_in_view():
+    """
+    Retrieves hotels that are within the current visible map area.
+    Expects north, south, east, and west query parameters.
+    """
+    try:
+        north = float(request.args.get('north'))
+        south = float(request.args.get('south'))
+        east = float(request.args.get('east'))
+        west = float(request.args.get('west'))
+    except (TypeError, ValueError):
+        return abort(400, description="Invalid or missing bounding box coordinates.")
+
+    bounding_box = [[west, south], [east, north]]
+
+    try:
+        query = {
+            'location': { '$geoWithin': { '$box': bounding_box } },
+            'status': 'approved'
+        }
+        # Define which fields to return
+        projection = {
+            'name': 1,
+            'location': 1,
+            'is_featured': 1,
+            'price_range': 1,
+            'accommodation_type': 1,
+            'facilities': 1
+        }
+        hotels_cursor = mongo.db.hotels.find(query, projection)
+        
+        hotels_list = []
+        for hotel in hotels_cursor:
+            hotel['_id'] = str(hotel['_id'])
+            # Get the count of active routes for this hotel
+            hotel['route_count'] = mongo.db.routes.count_documents({
+                'hotel_id': hotel['_id'],
+                'status': 'active'
+            })
+            hotels_list.append(hotel)
+            
+        return jsonify({'hotels': hotels_list})
+    except Exception as e:
+        print(f"Error fetching hotels in view: {e}")
+        return jsonify({'error': 'Could not fetch hotels in view'}), 500
