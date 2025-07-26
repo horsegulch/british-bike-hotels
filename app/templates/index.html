@@ -1,10 +1,7 @@
-<!-- app/templates/index.html -->
-
 {% extends "_layouts/base.html" %}
 
 {% block content %}
-<!-- Welcome Modal -->
-<div id="welcomeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4 hidden">
+<div id="welcomeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 relative transform transition-all scale-95 opacity-0" id="modalContent">
         <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -19,12 +16,26 @@
     </div>
 </div>
 
-<!-- Main Map Container -->
 <div class="relative">
     <div id="map" class="h-[80vh] w-full z-0" data-jawg-token="{{ jawg_token }}"></div>
+
+    <!-- UPDATED: Added 'overflow-hidden' to clip the content to the rounded corners -->
+    <div id="sidebar" class="absolute top-20 left-4 w-full max-w-sm h-[calc(80vh-6rem)] max-h-[calc(80vh-6rem)] bg-white/70 backdrop-blur-md rounded-2xl shadow-lg flex flex-col z-40 overflow-hidden">
+        <div class="p-4 border-b border-white/30">
+            <h2 class="font-poppins text-xl font-bold text-slate-800">Hotels in View</h2>
+        </div>
+        <div id="hotel-list" class="flex-grow overflow-y-auto p-2 space-y-2 pb-4">
+            <p class="text-gray-500 text-center py-8">Move the map to update this list.</p>
+        </div>
+        <!-- NEW: Scroll Down Indicator -->
+        <div id="scroll-indicator" class="absolute bottom-2 left-1/2 -translate-x-1/2 hidden">
+            <div class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center animate-bounce">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Latest Posts Section -->
 <div class="bg-gray-50 py-16">
     <div class="container mx-auto px-4">
         <div class="text-center mb-12">
@@ -56,20 +67,13 @@
 {% endblock %}
 
 {% block body_extra %}
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" xintegrity="sha512-VCFaClMLkeGOsbe/2MDCrzcibVGFZcNGbWC1GG/mDX5eQMWqJ8SRG7DS7iunydB/GilvikdenWSRnSp7HkGB/gA==" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" xintegrity="sha512-s3SjImBEzFNMzAjcoY5FfPTLmyI2g1pYvpyNvt+vUf+2/K+LzIQC/2sT2/tWpS02c/qL/4xOPIvQf3/k0Lg2w==" crossorigin=""/>
 
-<!-- Leaflet Marker Cluster CSS (Both files are needed) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" xintegrity="sha512-VCFaClMLkeGOsbe/2MDCrzcibVGFZcNGbWC1GG/mDX5eQMWqJ8SRG7DS7iunydB/GilvikdenWSRnSp7HkGB/gA==" crossorigin=""/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" xintegrity="sha512-s3SjImBEzFNMzAjcoY5FfPTLmyI2g1pYvpyNvt+vUf+2/K+LzIQC/2sT2/tWpS02c/qL/4xOPIvQf3/k0Lg2w==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" xintegrity="sha512-QlyB+BIeD/2L+gZIZWj2q2/hVjN2o+v+H/G+qVlGnDkOaRz/JcW8C1c/bUa7bQgoN/Bz03m/h2M2sB8j5c3gA==" crossorigin=""></script>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-
-<!-- Leaflet Marker Cluster JS -->
-<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" xintegrity="sha512-QlyB+BIeD/2L+gZIZWj2q2/hVjN2o+v+H/G+qVlGnDkOaRz/JcW8C1c/bUa7bQgoN/Bz03m/h2M2sB8j5c3gA==" crossorigin=""></script>
-
-<!-- Custom Scripts with defer attribute -->
-<script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
-<script src="{{ url_for('static', filename='js/welcome.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/welcome.js') }}" defer></script>
 {% endblock %}
