@@ -1,0 +1,22 @@
+<!-- app/templates/blog/post.html -->
+{% extends "_layouts/base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold font-poppins text-slate-900 tracking-tight sm:text-5xl">{{ post.title }}</h1>
+            <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500 font-poppins">
+                Published on {{ post.created_at.strftime('%B %d, %Y') }}
+            </p>
+        </div>
+
+        <div class="mt-12 prose prose-lg prose-indigo mx-auto text-gray-600 font-lora">
+            <!-- Render the markdown content -->
+            {{ post.content | markdown }}
+        </div>
+    </div>
+</div>
+{% endblock %}

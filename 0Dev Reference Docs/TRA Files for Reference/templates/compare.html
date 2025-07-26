@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Route Comparison{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Route Comparison</h1>
+    <p>A side-by-side comparison of key route metrics and elevation profiles.</p>
+</div>
+
+<div class="container container-wide">
+
+    <div class="chart-container" style="background-color: #FFFFFF; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h2>Metrics Radar</h2>
+        <canvas id="metricsRadarChart"></canvas>
+    </div>
+
+    <div class="chart-container" style="background-color: #FFFFFF; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h2>Elevation Profile</h2>
+        <canvas id="elevationProfileChart" style="height: 400px;"></canvas>
+    </div>
+
+    <div class="chart-container" style="background-color: #FFFFFF; padding: 20px; border-radius: 8px;">
+        <h2>Key Metrics</h2>
+        <table id="routesTable">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    {% for route in routes %}
+                        <th><a href="{{ url_for('route_profile_page', route_id=route._id) }}">{{ route.route_name or 'Unnamed Route' }}</a></th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Difficulty Score</strong></td>
+                    {% for route in routes %}
+                        <td>{{ "%.2f"|format(route.difficulty_score) }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Distance (km)</strong></td>
+                    {% for route in routes %}
+                        <td>{{ "%.2f"|format(route.metrics_summary.distance_km) }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Total Ascent (m)</strong></td>
+                    {% for route in routes %}
+                        <td>{{ "%.0f"|format(route.metrics_summary.TEGa) }}</td>
+                    {% endfor %}
+                </tr>
+                 <tr>
+                    <td><strong>Max Gradient (%)</strong></td>
+                    {% for route in routes %}
+                        <td>{{ "%.1f"|format(route.metrics_summary.MCg) }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Avg. Climb Gradient (%)</strong></td>
+                    {% for route in routes %}
+                        <td>{{ "%.1f"|format(route.metrics_summary.ACg) }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="top-reviews-section">
+        <h2>Top Reviews</h2>
+        <div class="comparison-reviews-grid">
+            {% for route in routes %}
+                <div class="trending-review-card">
+                    {% if route.top_review %}
+                        <div class="trending-review-header">
+                            <img src="{{ route.top_review.author_avatar_url }}" alt="{{ route.top_review.creator_username }}" class="creator-avatar-thumbnail">
+                            <span class="comment-author">{{ route.top_review.creator_username }}</span>
+                        </div>
+                        <blockquote class="trending-review-body">
+                            "{{ route.top_review.ride_report | truncate(200, True) }}"
+                        </blockquote>
+                        <div class="trending-review-meta">
+                            <span class="vote-score-display">★ {{ route.top_review.score }}</span>
+                        </div>
+                    {% else %}
+                        <div class="trending-review-body" style="border-left: none; font-style: normal;">
+                            <p>No reviews have been submitted for this route yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      var initialCompareData = {{ routes|tojson|safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+{% endblock %}

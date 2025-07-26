@@ -1,0 +1,83 @@
+<!-- app/templates/hotel_profile.html -->
+{% extends "_layouts/base.html" %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-12">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+            
+            <!-- Header Image using a placeholder -->
+            <div class="w-full h-48 md:h-64 bg-slate-800">
+                <img src="https://placehold.co/1200x400/2c3e50/f8f9fa?text={{ hotel.name | urlencode }}" alt="Promotional image for {{ hotel.name }}" class="w-full h-full object-cover">
+            </div>
+
+            <div class="p-6 md:p-8">
+                <!-- Header Section -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h1 class="font-poppins text-3xl md:text-4xl font-bold text-slate-800">{{ hotel.name }}</h1>
+                        {% if hotel.is_featured %}
+                        <div class="flex items-center mt-2">
+                            <svg class="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 7.91l6.572-.955L10 1l2.939 5.955 6.572.955-4.756 3.635 1.123 6.545z"></path></svg>
+                            <span class="font-poppins text-sm font-semibold text-amber-500 ml-1">Featured Partner</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4 md:mt-0 flex-shrink-0">
+                        <a href="{{ hotel.website }}" target="_blank" rel="noopener noreferrer" class="bg-amber-400 text-slate-800 font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-amber-500 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out inline-block">
+                            Visit Website
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mt-6 border-t pt-6">
+                    <p class="font-lora text-base text-gray-700 leading-relaxed">{{ hotel.description }}</p>
+                </div>
+
+                <!-- Facilities -->
+                <div class="mt-8">
+                    <h2 class="font-poppins text-2xl font-bold text-slate-800">Cyclist Facilities</h2>
+                    <div class="flex flex-wrap gap-3 mt-4">
+                        {% for facility in hotel.facilities %}
+                        <span class="bg-gray-200 text-slate-700 font-poppins font-medium py-2 px-4 rounded-full text-sm">
+                            {{ facility.replace('_', ' ') | title }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Routes -->
+                <div class="mt-8">
+                    <h2 class="font-poppins text-2xl font-bold text-slate-800">Nearby Routes</h2>
+                    {% if routes %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                        {% for route in routes %}
+                        <a href="{{ url_for('main.route_profile', route_id=route._id) }}" class="block">
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-amber-400 transition-all duration-200 h-full">
+                                <h3 class="font-poppins font-bold text-slate-800 text-lg">{{ route.name }}</h3>
+                                <p class="font-lora text-sm text-gray-600 mt-1 h-16">{{ route.description }}</p>
+                                <div class="flex justify-between items-baseline mt-4 border-t pt-4">
+                                    <div>
+                                        <span class="font-poppins font-semibold text-slate-700">{{ "%.1f"|format(route.distance_km) }} km</span>
+                                        <span class="text-gray-500 text-sm block">Distance</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-poppins font-semibold text-slate-700">{{ "%.0f"|format(route.elevation_m) }} m</span>
+                                        <span class="text-gray-500 text-sm block">Elevation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="mt-4 text-gray-600 font-lora">No routes have been added for this hotel yet.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

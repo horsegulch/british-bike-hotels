@@ -1,0 +1,178 @@
+<!-- app/templates/admin/edit_hotel.html -->
+
+{% extends "_layouts/base.html" %}
+
+{% block title %}Edit Hotel{% endblock %}
+
+{% block content %}
+<!-- Add padding-top (pt-24) to push content below the navbar -->
+<div class="w-full max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-24">
+    <!-- Edit Hotel Form Card -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h1 class="font-poppins text-3xl font-bold text-slate-800 mb-6">Edit Hotel</h1>
+        <form method="POST" action="{{ url_for('admin.edit_hotel', hotel_id=hotel._id) }}" novalidate>
+             {{ form.hidden_tag() }}
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Hotel Name -->
+                <div>
+                    <label for="{{ form.name.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.name.label }}</label>
+                    <div class="mt-1">
+                        {{ form.name(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                </div>
+                <!-- Description -->
+                <div>
+                    <label for="{{ form.description.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.description.label }}</label>
+                    <div class="mt-1">
+                        {{ form.description(rows=4, class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                </div>
+                <!-- Location Picker -->
+                 <div>
+                    <label class="block text-sm font-medium text-gray-700 font-poppins">Select Location</label>
+                    <div id="location-picker-map" class="mt-1 w-full rounded-md border border-gray-300 relative bg-gray-100" data-jawg-token="{{ jawg_token }}"></div>
+                    {{ form.coordinates(class="hidden") }}
+                </div>
+                <!-- Website and Phone -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.website.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.website.label }}</label>
+                        <div class="mt-1">
+                             {{ form.website(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ form.phone.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.phone.label }}</label>
+                        <div class="mt-1">
+                             {{ form.phone(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accommodation Type and Star Rating -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.accommodation_type.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.accommodation_type.label }}</label>
+                        <div class="mt-1">
+                            {{ form.accommodation_type(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ form.star_rating.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.star_rating.label }}</label>
+                        <div class="mt-1">
+                            {{ form.star_rating(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Price Range and Google Rating -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.price_range.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.price_range.label }}</label>
+                        <div class="mt-1">
+                            {{ form.price_range(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                     <div>
+                        <label for="{{ form.google_rating.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.google_rating.label }}</label>
+                        <div class="mt-1">
+                             {{ form.google_rating(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm", placeholder="e.g., 4.5") }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facilities Checklist - DEFINITIVE FIX -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 font-poppins">{{ form.facilities.label }}</label>
+                    <div class="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-4 border p-4 rounded-md">
+                        <!-- Manually loop through choices to build checkboxes with full control -->
+                        {% for value, label in form.facilities.choices %}
+                        <div class="flex items-center">
+                            <input type="checkbox" name="facilities" value="{{ value }}" id="facilities-{{ value }}"
+                                   class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                                   {% if value in form.facilities.data %}checked{% endif %}>
+                            <label for="facilities-{{ value }}" class="ml-2 block text-sm text-gray-900">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- is_featured and status -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                    <div class="flex items-center">
+                        {{ form.is_featured(class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded") }}
+                        <label for="{{ form.is_featured.id }}" class="ml-2 block text-sm text-gray-900 font-poppins">{{ form.is_featured.label }}</label>
+                    </div>
+                     <div>
+                        <label for="{{ form.status.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.status.label }}</label>
+                        <div class="mt-1">
+                            {{ form.status(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                </div>
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                        Save Hotel Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Associated Routes Card -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mt-10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-poppins text-2xl font-bold text-slate-800">Associated Routes</h2>
+            <a href="{{ url_for('admin.add_route', hotel_id=hotel._id) }}" class="bg-amber-400 text-slate-800 font-poppins font-bold py-2 px-5 rounded-lg shadow-sm hover:bg-amber-500 transform hover:-translate-y-0.5 transition-all duration-150 ease-in-out">
+                Add New Route
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Route Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Distance (km)</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Surface</th>
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% if routes %}
+                        {% for route in routes %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 font-lora">{{ route.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-lora">{{ route.distance_km }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-lora">{{ route.surface_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                                <a href="{{ url_for('admin.edit_route', route_id=route._id) }}" class="text-amber-600 hover:text-amber-900">Edit</a>
+                                <form action="{{ url_for('admin.delete_route', route_id=route._id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to archive this route? This action cannot be undone.');">
+                                    <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Archive</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No active routes found for this hotel.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<!-- Location Picker Script -->
+<script src="{{ url_for('static', filename='js/location_picker.js') }}"></script>
+{% endblock %}

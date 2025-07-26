@@ -1,0 +1,6 @@
+What are Blueprints?
+Flask Blueprints let you organize your app into reusable, modular components. Each blueprint can handle a set of related routes and logic (e.g., authentication, routes, reviews, user profiles).
+Why use them?
+Easier to maintain and scale.
+Each feature/section of your app lives in its own file or folder.
+Cleaner app.py (just app setup and blueprint registration).

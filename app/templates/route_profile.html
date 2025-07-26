@@ -1,0 +1,83 @@
+<!-- app/templates/route_profile.html -->
+
+{% extends "_layouts/base.html" %}
+
+{% block title %}{{ route.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50">
+    <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h1 class="font-poppins text-4xl font-extrabold text-slate-800 tracking-tight">
+                {{ route.name }}
+            </h1>
+            <p class="mt-2 text-lg text-gray-600 font-lora">
+                A route from <a href="{{ url_for('main.hotel_profile', hotel_id=hotel._id) }}" class="text-amber-600 hover:text-amber-800 font-semibold">{{ hotel.name }}</a>
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="space-y-8">
+
+            <!-- Map & Chart Section -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg">
+                <div id="route-map" class="w-full h-96 rounded-lg border border-gray-200 bg-gray-100 mb-4" 
+                     data-jawg-token="{{ jawg_token }}" 
+                     data-track-points="{{ track_points_json }}">
+                </div>
+                 <!-- Elevation Chart -->
+                <div class="h-64">
+                    <canvas id="elevation-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stats & Description Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <div class="md:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h2 class="font-poppins text-xl font-bold text-slate-800 border-b pb-3 mb-4">Route Stats</h2>
+                        <dl class="space-y-3">
+                            <div class="flex justify-between font-lora text-sm">
+                                <dt class="font-medium text-gray-500">Distance</dt>
+                                <dd class="text-gray-900 font-semibold">{{ "%.1f"|format(route.distance_km) }} km</dd>
+                            </div>
+                            <div class="flex justify-between font-lora text-sm">
+                                <dt class="font-medium text-gray-500">Elevation Gain</dt>
+                                <dd class="text-gray-900 font-semibold">{{ "%.0f"|format(route.elevation_m) }} m</dd>
+                            </div>
+                            <div class="flex justify-between font-lora text-sm">
+                                <dt class="font-medium text-gray-500">Difficulty</dt>
+                                <dd class="text-gray-900 font-semibold">{{ route.difficulty }}</dd>
+                            </div>
+                            <div class="flex justify-between font-lora text-sm">
+                                <dt class="font-medium text-gray-500">Surface</dt>
+                                <dd class="text-gray-900 font-semibold">{{ route.surface_type }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                    <h2 class="font-poppins text-xl font-bold text-slate-800 border-b pb-3 mb-4">Description</h2>
+                    <p class="font-lora text-gray-700 text-sm leading-relaxed">
+                        {{ route.description or "No description provided." }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Route Profile Script -->
+<script src="{{ url_for('static', filename='js/route_profile.js') }}"></script>
+{% endblock %}

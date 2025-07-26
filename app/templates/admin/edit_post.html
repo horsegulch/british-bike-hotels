@@ -1,0 +1,49 @@
+<!-- app/templates/admin/edit_post.html -->
+
+{% extends "_layouts/base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h1 class="font-poppins text-3xl font-bold text-slate-800 mb-6">{{ title }}</h1>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="space-y-6">
+                <!-- Title -->
+                <div>
+                    <label for="{{ form.title.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.title.label }}</label>
+                    <div class="mt-1">
+                        {{ form.title(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div>
+                    <label for="{{ form.content.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.content.label }}</label>
+                    <div class="mt-1">
+                        {{ form.content(rows=15, class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                     <p class="mt-2 text-sm text-gray-500">You can use Markdown for formatting.</p>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label for="{{ form.status.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.status.label }}</label>
+                    <div class="mt-1">
+                        {{ form.status(class="block w-full max-w-xs pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    {{ form.submit(class="w-full bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

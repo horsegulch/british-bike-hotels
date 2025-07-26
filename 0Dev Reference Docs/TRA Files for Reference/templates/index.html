@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block body_class %}home-background{% endblock %}
+
+{% block title %}Discover Your Next Great Ride{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <img src="/static/images/TRA-Logo.png" alt="The Ride Archive Logo" class="hero-section-logo">
+        <h1>Find Your Next Great Ride</h1>
+        <p>A worldwide collection of community-created, difficulty-rated cycling routes.</p>
+        <div class="button-container">
+            <a href="{{ url_for('routes.browse_routes_page') }}" class="hero-cta-button">Explore the Archive</a>
+            <a href="{{ url_for('routes.add_routes_page') }}" class="hero-cta-button">Upload your Route</a>
+        </div>
+    </div>    
+</div>
+
+<div class="content-section">
+    <h1>Top Rated Routes</h1>
+    <div class="route-grid">
+        {% for route in top_routes %}
+            <div class="route-card">
+                <a href="{{ url_for('routes.route_profile_page', route_id=route._id) }}" class="route-card-thumbnail-link">
+                    <div class="route-card-map-thumbnail">
+                        <img src="{{ route.static_map_thumbnail_url }}" alt="Map for {{ route.route_name or 'Unnamed Route' }}">
+                    </div>
+                </a>
+                <div class="route-card-content">
+                    <h3><a href="{{ url_for('routes.route_profile_page', route_id=route._id) }}">{{ route.route_name or 'Unnamed Route' }}</a></h3>
+
+                    <div class="route-card-stats">
+                        <span><strong>Distance:</strong> {{ route.metrics_summary.distance_km|round(1) }} km</span>
+                        <span><strong>Elevation:</strong> {{ route.metrics_summary.TEGa|round }} m</span>
+                    </div>
+
+                    <div class="route-card-creator-info">
+                        {% if route.creator_avatar_url %}
+                            <img src="{{ route.creator_avatar_url }}" alt="{{ route.creator_username or 'Anonymous' }}'s avatar" class="creator-avatar-thumbnail">
+                        {% endif %}
+                        <span class="creator-username">By: {{ route.creator_username or 'Anonymous' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>No routes have been rated yet.</p>
+        {% endfor %} </div>
+</div>
+{% if trending_reviews %}
+<div class="content-section">
+    <h1>Trending Reviews</h1>
+    <div class="trending-reviews-grid">
+        {% for review in trending_reviews %}
+        <div class="trending-review-card">
+            <div class="trending-review-header">
+                <img src="{{ review.author_avatar_url }}" alt="{{ review.creator_username }}" class="creator-avatar-thumbnail">
+                <span class="comment-author">{{ review.creator_username }}</span>
+            </div>
+            <blockquote class="trending-review-body">
+                "{{ review.ride_report | truncate(150, True) }}"
+            </blockquote>
+            <div class="trending-review-meta">
+                <span>on <a href="{{ url_for('routes.route_profile_page', route_id=review.route_details._id) }}">{{ review.route_details.route_name }}</a></span>
+                <span class="vote-score-display">★ {{ review.score }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="content-section">
+    <h1>Trending Photos</h1>
+    <div id="trendingImagesGrid" class="trending-images-grid">
+        </div>
+</div>
+
+<div class="content-section">
+    <h1>Latest Routes</h1>
+    <div class="route-grid">
+        {% for route in latest_routes %}
+            <div class="route-card">
+                <a href="{{ url_for('routes.route_profile_page', route_id=route._id) }}" class="route-card-thumbnail-link">
+                    <div class="route-card-map-thumbnail">
+                        <img src="{{ route.static_map_thumbnail_url }}" alt="Map for {{ route.route_name or 'Unnamed Route' }}">
+                    </div>
+                </a>
+                <div class="route-card-content">
+                    <h3><a href="{{ url_for('routes.route_profile_page', route_id=route._id) }}">{{ route.route_name or 'Unnamed Route' }}</a></h3>
+
+                    <div class="route-card-stats">
+                        <span><strong>Distance:</strong> {{ route.metrics_summary.distance_km|round(1) }} km</span>
+                        <span><strong>Elevation:</strong> {{ route.metrics_summary.TEGa|round }} m</span>
+                    </div>
+
+                    <div class="route-card-creator-info">
+                        {% if route.creator_avatar_url %}
+                            <img src="{{ route.creator_avatar_url }}" alt="{{ route.creator_username or 'Anonymous' }}'s avatar" class="creator-avatar-thumbnail">
+                        {% endif %}
+                        <span class="creator-username">By: {{ route.creator_username or 'Anonymous' }}</span>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No routes have been added yet. Be the first!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}

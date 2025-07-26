@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="The Ride Archive Planner" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>treyui</name>
+  </metadata>
+  <trk>
+    <name>treyui</name>
+    <trkseg>
+      <trkpt lat="53.39402" lon="-2.98907"></trkpt>
+      <trkpt lat="53.40645" lon="-2.97942"></trkpt>
+      <trkpt lat="53.4084" lon="-2.87212"></trkpt>
+      <trkpt lat="53.39621" lon="-2.81843"></trkpt>
+      <trkpt lat="53.42848" lon="-2.55217"></trkpt>
+      <trkpt lat="53.39536" lon="-2.50798"></trkpt>
+      <trkpt lat="53.36185" lon="-2.50941"></trkpt>
+      <trkpt lat="53.34427" lon="-2.49384"></trkpt>
+      <trkpt lat="53.30956" lon="-2.41"></trkpt>
+      <trkpt lat="53.29829" lon="-2.39971"></trkpt>
+      <trkpt lat="53.23826" lon="-2.40041"></trkpt>
+      <trkpt lat="53.19618" lon="-2.38555"></trkpt>
+      <trkpt lat="53.14197" lon="-2.33732"></trkpt>
+      <trkpt lat="53.09131" lon="-2.34331"></trkpt>
+      <trkpt lat="53.06942" lon="-2.33338"></trkpt>
+      <trkpt lat="53.05945" lon="-2.23737"></trkpt>
+      <trkpt lat="53.03712" lon="-2.21113"></trkpt>
+      <trkpt lat="53.01503" lon="-2.20079"></trkpt>
+      <trkpt lat="52.99754" lon="-2.15639"></trkpt>
+      <trkpt lat="52.99169" lon="-2.15736"></trkpt>
+      <trkpt lat="52.91012" lon="-1.887"></trkpt>
+      <trkpt lat="52.91" lon="-1.82505"></trkpt>
+      <trkpt lat="52.88412" lon="-1.75445"></trkpt>
+      <trkpt lat="52.87862" lon="-1.63117"></trkpt>
+      <trkpt lat="52.86574" lon="-1.56518"></trkpt>
+      <trkpt lat="52.87048" lon="-1.51638"></trkpt>
+      <trkpt lat="52.86021" lon="-1.4309"></trkpt>
+      <trkpt lat="52.87137" lon="-1.3809"></trkpt>
+      <trkpt lat="52.85516" lon="-1.29639"></trkpt>
+      <trkpt lat="52.84475" lon="-1.29371"></trkpt>
+      <trkpt lat="52.86599" lon="-1.24213"></trkpt>
+      <trkpt lat="52.92503" lon="-1.16368"></trkpt>
+      <trkpt lat="52.93797" lon="-1.13191"></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Add a Route{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Add Your Route to The Ride Archive</h1>
+    <p>Contribute to our community library and get a difficulty score for your ride.</p>
+</div>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-link active" data-tab="file">Upload File</button>
+        <button class="tab-link" data-tab="url">From URL</button>
+    </div>
+
+    <div id="file" class="tab-content active">
+        <form id="uploadForm">
+            <div id="dropZone" class="drop-zone mb-3">
+                <input type="file" id="gpxFile" name="gpx_file[]" accept=".gpx,.tcx" multiple>
+                <div class="drop-zone-icon">⬆️</div>
+                <div class="drop-zone-text">
+                    <strong>Drag & drop your file here</strong>
+                    <p>or <a href="#" id="browseLink">browse your computer</a></p>
+                    <small>Supports single or multiple .gpx and .tcx files</small>
+                </div>
+            </div>
+            <div id="fileNameDisplay" class="mt-2 text-center"></div>
+            <button type="submit" class="btn mt-3" style="width: 100%;">Process Route(s)</button>
+        </form>
+    </div>
+
+    <div id="url" class="tab-content">
+        <form id="urlForm">
+            <label for="routeUrl" class="form-label">Route URL</label>
+            <input type="url" id="routeUrl" name="route_url" class="form-control" placeholder="Paste route URL from RWGPS or Plotaroute" required>
+            <button type="submit" class="btn mt-3" style="width: 100%;">Process from URL</button>
+        </form>
+    </div>
+
+    <div id="loading" class="mt-3" style="display: none; text-align: center;">Processing, please wait...</div>
+    <div id="errorOutput" class="mt-3"></div>
+</div>
+
+<div class="container">
+    <div class="glossary-container">
+        <div class="glossary-toggle">Glossary of Terms</div>
+        <div class="glossary-content">
+            <dl>
+                <dt>TEGa (m):</dt><dd>Total Elevation Gain (Ascent) in meters.</dd>
+                <dt>PDD (%):</dt><dd>Proportion of Distance Downhill.</dd>
+                <dt>MCg (%):</dt><dd>Max Climb Gradient.</dd>
+                <dt>ACg (%):</dt><dd>Average Climb Gradient.</dd>
+                <dt>ADg (%):</dt><dd>Average Descent Gradient.</dd>
+                <dt>Difficulty Score:</dt><dd>The overall calculated difficulty of the route.</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }} <script src="{{ url_for('static', filename='js/add_routes.js') }}"></script>
+{% endblock %}

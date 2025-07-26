@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Routes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Browse the Archive</h1>
+    <p>Explore and compare cycling routes from around the world. Use the map or filters below to find your next adventure.</p>
+</div>
+
+<div class="container page-content-container container-wide">
+    <div class="controls-outer-container">
+        <div id="collapsibleFilters"> 
+            <div class="filter-row">
+    <div class="control-group">
+        <label for="searchInput">Search Name:</label>
+        <input type="text" id="searchInput" placeholder="Search by route name..." class= "form-control">
+    </div>
+    <div class="control-group">
+        <label for="startLocationFilter">Start Location:</label>
+        <input type="text" id="startLocationFilter" placeholder="Filter by start location..." class= "form-control">
+    </div>
+    <div class="control-group">
+        <label for="surfaceTypeFilter">Surface Type:</label>
+        <select id="surfaceTypeFilter" class="form-control">
+            <option value="">All Surfaces</option>
+            <option value="Road">Road</option>
+            <option value="Gravel">Gravel</option>
+            <option value="Mixed">Mixed</option>
+            <option value="MTB">MTB</option>
+        </select>
+    </div>
+    <div class="control-group">
+        <label for="tagFilterInput">Tags:</label>
+        <input type="text" id="tagFilterInput" placeholder="Filter by a single tag..." class= "form-control">
+    </div>
+</div>
+
+<div class="filter-row">
+    <div class="control-group">
+        <label for="difficultySlider">Difficulty Score: <span id="difficultySliderValue" class="slider-value-display">0 - 500</span></label>
+        <div id="difficultySlider"></div>
+    </div>
+    <div class="control-group">
+        <label for="distanceSlider">Distance (km): <span id="distanceSliderValue" class="slider-value-display">0 - 500 km</span></label>
+        <div id="distanceSlider"></div>
+    </div>
+    <div class="control-group">
+        <label for="tegaSlider">TEGa (m): <span id="tegaSliderValue" class="slider-value-display">0 - 5000 m</span></label>
+        <div id="tegaSlider"></div>
+    </div>
+</div>
+
+<div class="filter-actions">
+    <div class="reset-spacer"></div>
+    
+    <div class="map-toggle-container">
+        <label for="filterByMapToggle" class="toggle-switch-label">
+            <input type="checkbox" id="filterByMapToggle" class="toggle-switch-input">
+            <span class="toggle-switch-ui"></span>
+            <span>Filter by Map View</span>
+        </label>
+    </div>
+
+    <button id="resetFiltersButton" class="btn-icon" title="Reset All Filters">
+    &#x21BA;
+</button>
+</div>
+
+    <div id="browseMapContainer"></div>
+    
+    <div id="compareContainer">
+        <button id="compareBtn" class="hero-cta-button">Compare Selected Routes</button>
+    </div>
+
+    <div id="listContainerWrapper" style="display: block;"> 
+        <div id="loadingMessage" class="message-common">Loading routes...</div>
+        <div id="errorMessage" class="message-common" style="display: none;"></div>
+        <table id="routesTable" style="display: none;"> 
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAllCheckbox" title=""></th> 
+                    <th data-column-index="0">Route Name</th>
+                    <th data-column-index="1">Location</th>
+                    <th data-column-index="2">Distance (km)</th>
+                    <th data-column-index="3">Elevation (m)</th>
+                    <th data-column-index="4">RAD Score</th>
+                    <th data-column-index="5">Added</th>
+                    <th data-column-index="6">Creator</th>
+                </tr>
+            </thead>
+            <tbody id="routesTableBody"></tbody>
+        </table>
+        <p id="noRoutesMessage" class="message-common" style="display: none;">No routes match your criteria.</p>
+    </div>
+</div>
+
+<div id="comparisonModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+        <h2>Route Comparison</h2>
+        <div id="modalChartsContainer">
+            <div class="chart-container"><canvas id="modalRadarChart"></canvas></div>
+            <div class="chart-container"><canvas id="modalElevationChart" style="height:300px"></canvas></div>
+        </div>
+        <div id="modalTableContainer">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/leaflet.fullscreen.css" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-fullscreen@1.0.2/dist/Leaflet.fullscreen.min.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="{{ url_for('static', filename='js/browse_routes.js') }}"></script>
+{% endblock %}

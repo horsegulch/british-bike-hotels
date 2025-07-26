@@ -1,0 +1,112 @@
+/* app/static/css/style.css */
+
+/*
+  This rule provides an explicit, non-responsive height for the location picker map
+  in the admin panel. This helps resolve a common Leaflet rendering issue on complex pages.
+*/
+#location-picker-map {
+    height: 320px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Styles for the custom icon-only markers on the main map.
+*/
+.custom-icon-only .fa-solid {
+  font-size: 36px; /* Controls the size of the Font Awesome icon */
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4); /* Adds a subtle drop shadow for readability */
+}
+
+/*
+  This ensures that Leaflet's popups use our site's primary font,
+  maintaining a consistent look and feel.
+*/
+.leaflet-popup-content-wrapper {
+    font-family: 'Poppins', sans-serif;
+}
+
+/*
+  DEFINITIVE FIX: Use highly specific rules to override the default Marker Cluster colors.
+  This targets both the outer ring (the main element) and the inner circle (the div inside).
+*/
+
+/* --- SMALL CLUSTERS (Slate) --- */
+.leaflet-marker-icon.marker-cluster-small {
+  background-color: rgba(44, 62, 80, 0.6); /* Lighter slate-800 for the ring */
+}
+.leaflet-marker-icon.marker-cluster-small div {
+  background-color: rgba(44, 62, 80, 0.9); /* Darker slate-800 for the center */
+}
+
+/* --- MEDIUM CLUSTERS (Amber) --- */
+.leaflet-marker-icon.marker-cluster-medium {
+  background-color: rgba(255, 193, 7, 0.6); /* Lighter amber-400 for the ring */
+}
+.leaflet-marker-icon.marker-cluster-medium div {
+  background-color: rgba(255, 193, 7, 0.9); /* Darker amber-400 for the center */
+}
+
+/* --- LARGE CLUSTERS (Amber) --- */
+.leaflet-marker-icon.marker-cluster-large {
+  background-color: rgba(255, 193, 7, 0.6); /* Lighter amber-400 for the ring */
+}
+.leaflet-marker-icon.marker-cluster-large div {
+  background-color: rgba(255, 193, 7, 0.9); /* Darker amber-400 for the center */
+}
+
+/* Style for the text (the number) inside the cluster icon */
+.marker-cluster div span {
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+
+/* STYLES for Accessible Autocomplete */
+
+#autocomplete-container {
+    position: relative;
+}
+.autocomplete__input {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 1rem !important;
+    width: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+.autocomplete__input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Positioning for the dropdown menu */
+.autocomplete__menu {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    margin-top: 0.25rem !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.autocomplete__option {
+    color: #2c3e50;
+    padding: 0.75rem 1rem !important;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+.autocomplete__option--focused {
+    background-color: #f8f9fa !important;
+    color: #2c3e50 !important;
+}
+.autocomplete__option mark {
+    background-color: #ffc107 !important;
+    color: #2c3e50 !important;
+    font-weight: bold;
+}

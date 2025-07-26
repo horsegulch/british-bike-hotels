@@ -1,0 +1,59 @@
+/britishbikehotels
+|
+|-- app/
+|   |-- init.py             # Initializes the Flask app and extensions
+|   |
+|   |-- api/                    # Blueprint for API endpoints
+|   |   |-- init.py
+|   |   |-- api_routes.py         # Main data-providing endpoints (hotels, routes)
+|   |   |-- tracking_routes.py    # Analytics event tracking
+|   |   |-- planner_routes.py     # Itinerary/trip planning endpoints
+|   |
+|   |-- auth/                   # Blueprint for admin authentication
+|   |   |-- init.py
+|   |   |-- auth_routes.py      # Login, logout, MFA routes
+|   |   |-- forms.py            # Login forms
+|   |
+|   |-- main/                   # Blueprint for core frontend pages
+|   |   |-- init.py
+|   |   |-- main_routes.py      # Homepage, hotel profiles, blog, etc.
+|   |
+|   |-- admin/                  # Blueprint for admin dashboard
+|   |   |-- init.py
+|   |   |-- admin_routes.py     # All admin panel views
+|   |
+|   |-- static/
+|   |   |-- css/
+|   |   |   |-- style.css       # Main stylesheet
+|   |   |-- js/
+|   |   |   |-- map.js          # Leaflet map logic
+|   |   |   |-- trip_planner.js # Itinerary functionality
+|   |   |   |-- charts.js       # Chart.js logic for reports
+|   |   |-- img/                # Logos, static images
+|   |
+|   |-- templates/
+|   |   |-- /_layouts/
+|   |   |   |-- base.html
+|   |   |-- /_includes/
+|   |   |   |-- navbar.html
+|   |   |   |-- footer.html
+|   |   |-- /admin/
+|   |   |   |-- dashboard.html
+|   |   |   |-- manage_hotels.html
+|   |   |   |-- moderation_queue.html
+|   |   |-- /auth/
+|   |   |   |-- login.html
+|   |   |-- index.html          # Main homepage with map
+|   |   |-- hotel_profile.html
+|   |   |-- route_profile.html
+|   |   |-- my_trip.html
+|   |
+|   |-- models.py               # Helper functions for DB interaction (not ORM models)
+|   |-- services.py             # Business logic (e.g., sending emails)
+|
+|-- config.py                   # Configuration settings
+|-- run.py                      # Main entry point to run the app
+|-- requirements.txt            # Python dependencies
+|-- seed_db.py                  # Script to populate DB with sample data
+|-- .env.example                # Example environment variables
+|-- .gitignore

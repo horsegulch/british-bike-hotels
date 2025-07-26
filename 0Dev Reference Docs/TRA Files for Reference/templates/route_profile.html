@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Route Profile{% endblock %}
+
+{% block content %}
+<div class="route-profile-header page-header">
+    <div class="container page-content-container">
+        <h1 id="routeName">Loading Route...</h1>
+
+        <div id="creatorInfo" class="creator-info-block" style="display: none;">
+            <img id="creatorAvatar" src="" alt="Creator Avatar" class="comment-author-avatar">
+            <span class="creator-byline">Uploaded by <strong id="creatorUsername"></strong></span>
+        </div>
+
+        <div id="tagsBar" class="tags-bar"></div>
+
+        <div id="keyStats" class="key-stats-container">
+            </div>
+
+            <div id="keyStats" class="key-stats-container">
+            </div>
+
+        <div id="headerImageGalleryContainer" class="header-gallery-container" style="display: none;">
+            <h4>Photo Gallery</h4>
+            <div id="headerImageGallery" class="header-image-gallery">
+                </div>
+        </div>
+        <div class="description-section">
+             <p id="routeDescription">No description provided.</p>
+        </div>
+
+        <div class="description-section">
+             <p id="routeDescription">No description provided.</p>
+        </div>
+        <div class="actions-bar">
+        <div class="like-section">
+            <button id="likeButton" class="like-button" aria-label="Like this route">Like</button> 
+            <span id="likesCount">Likes: 0</span>
+        </div>
+
+        <button id="openReviewModalBtn" class="download-button">Leave a Review</button>
+        <a id="accessFileButton" href="#" class="download-button" target="_blank">Access Route File</a>
+    </div>
+    </div>
+</div>
+<div class="container-full-width">
+    <div id="map"></div>
+    <div class="chart-container" style="padding: 5px 0;">
+        <canvas id="elevationProfileChart"></canvas>
+    </div>
+</div>
+
+
+<div class="container page-content-container">
+                <div class="comments-section">
+                    <h3>Comments</h3>
+                    <div class="review-sort-controls">
+                        <span>Sort by:</span>
+                        <button class="sort-btn active" data-sort="latest">Latest</button>
+                        <button class="sort-btn" data-sort="top">Top</button>
+                    </div>
+                    <ul id="commentsList"></ul>
+                </div>
+            </div>
+
+<div id="reviewModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <button class="modal-close" id="closeReviewModalBtn">&times;</button>
+        <h2>Leave a Review</h2>
+        <p>Share your experience and help others find their next great ride.</p>
+        
+        <form id="reviewForm" method="POST" enctype="multipart/form-data">
+    
+    <div class="rating-group">
+        <label>Scenery:</label>
+        <div class="star-rating">
+            <input type="radio" id="scenery-5" name="rating_scenery" value="5" /><label for="scenery-5">★</label>
+            <input type="radio" id="scenery-4" name="rating_scenery" value="4" /><label for="scenery-4">★</label>
+            <input type="radio" id="scenery-3" name="rating_scenery" value="3" /><label for="scenery-3">★</label>
+            <input type="radio" id="scenery-2" name="rating_scenery" value="2" /><label for="scenery-2">★</label>
+            <input type="radio" id="scenery-1" name="rating_scenery" value="1" /><label for="scenery-1">★</label>
+        </div>
+    </div>
+
+    <div class="rating-group">
+        <label>Lack of Traffic:</label>
+        <div class="star-rating">
+            <input type="radio" id="traffic-5" name="rating_traffic" value="5" /><label for="traffic-5">★</label>
+            <input type="radio" id="traffic-4" name="rating_traffic" value="4" /><label for="traffic-4">★</label>
+            <input type="radio" id="traffic-3" name="rating_traffic" value="3" /><label for="traffic-3">★</label>
+            <input type="radio" id="traffic-2" name="rating_traffic" value="2" /><label for="traffic-2">★</label>
+            <input type="radio" id="traffic-1" name="rating_traffic" value="1" /><label for="traffic-1">★</label>
+        </div>
+    </div>
+
+    <div class="rating-group">
+        <label>Pit Stops (Cafes, Shops, etc.):</label>
+        <div class="star-rating">
+            <input type="radio" id="stops-5" name="rating_pit_stops" value="5" /><label for="stops-5">★</label>
+            <input type="radio" id="stops-4" name="rating_pit_stops" value="4" /><label for="stops-4">★</label>
+            <input type="radio" id="stops-3" name="rating_pit_stops" value="3" /><label for="stops-3">★</label>
+            <input type="radio" id="stops-2" name="rating_pit_stops" value="2" /><label for="stops-2">★</label>
+            <input type="radio" id="stops-1" name="rating_pit_stops" value="1" /><label for="stops-1">★</label>
+        </div>
+    </div>
+
+    <div class="rating-group">
+        <label>Points of Interest:</label>
+        <div class="star-rating">
+            <input type="radio" id="interest-5" name="rating_interest_points" value="5" /><label for="interest-5">★</label>
+            <input type="radio" id="interest-4" name="rating_interest_points" value="4" /><label for="interest-4">★</label>
+            <input type="radio" id="interest-3" name="rating_interest_points" value="3" /><label for="interest-3">★</label>
+            <input type="radio" id="interest-2" name="rating_interest_points" value="2" /><label for="interest-2">★</label>
+            <input type="radio" id="interest-1" name="rating_interest_points" value="1" /><label for="interest-1">★</label>
+        </div>
+    </div>
+
+    <div class="rating-group">
+        <label>Perceived Difficulty (1=Easy, 5=Very Hard):</label>
+        <div class="star-rating">
+            <input type="radio" id="difficulty-5" name="rating_perceived_difficulty" value="5" /><label for="difficulty-5">★</label>
+            <input type="radio" id="difficulty-4" name="rating_perceived_difficulty" value="4" /><label for="difficulty-4">★</label>
+            <input type="radio" id="difficulty-3" name="rating_perceived_difficulty" value="3" /><label for="difficulty-3">★</label>
+            <input type="radio" id="difficulty-2" name="rating_perceived_difficulty" value="2" /><label for="difficulty-2">★</label>
+            <input type="radio" id="difficulty-1" name="rating_perceived_difficulty" value="1" /><label for="difficulty-1">★</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="rideReportText">Ride Report & Tips:</label>
+        <textarea id="rideReportText" name="ride_report" class="form-control" rows="8" required placeholder="Describe your experience. What were the highlights? Any tips for others?"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="rideImages">Upload Photos:</label>
+        <input type="file" id="rideImages" name="ride_images" class="form-control" multiple accept="image/png, image/jpeg, image/gif">
+    </div>
+
+    <button type="submit" class="btn">Submit Review</button>
+</form>
+        </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>const IS_USER_AUTHENTICATED = {{ current_user.is_authenticated | tojson }};</script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.js"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+    <script src="{{ url_for('static', filename='js/route_profile.js') }}"></script>
+    
+{% endblock %}

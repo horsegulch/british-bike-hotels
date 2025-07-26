@@ -1,0 +1,47 @@
+<!-- app/templates/admin/manage_hotels.html -->
+{% extends "_layouts/base.html" %}
+
+{% block title %}Manage Hotels{% endblock %}
+
+{% block content %}
+<!-- Add pt-24 to push content below the navbar -->
+<div class="container mx-auto px-4 py-10 pt-24">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="font-poppins text-3xl font-bold text-slate-800">Manage Hotels</h1>
+        <a href="{{ url_for('admin.add_hotel') }}" class="bg-amber-400 text-slate-800 font-poppins font-bold py-2 px-5 rounded-lg shadow-sm hover:bg-amber-500 transform hover:-translate-y-0.5 transition-all duration-150 ease-in-out">
+            Add New Hotel
+        </a>
+    </div>
+
+    <!-- Hotels Table -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Hotel Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Status</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-poppins">Featured</th>
+                        <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for hotel in hotels %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 font-lora">{{ hotel.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-lora">{{ hotel.status | title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-lora">{% if hotel.is_featured %}Yes{% else %}No{% endif %}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                            <a href="{{ url_for('admin.edit_hotel', hotel_id=hotel._id) }}" class="text-slate-600 hover:text-slate-900">Edit</a>
+                            <form action="{{ url_for('admin.delete_hotel', hotel_id=hotel._id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to set this hotel to Offline?');">
+                                <button type="submit" class="text-red-600 hover:text-red-900 font-medium">Offline</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

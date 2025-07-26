@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Neuton:ital,wght@1,700&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ride Archive - {% block title %}Discover Your Next Great Ride{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    
+    {% block head %}{% endblock %}
+    
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <nav class="navbar">
+        <a href="{{ url_for('routes.serve_index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='images/TRA-Logo.png') }}" alt="The Ride Archive Logo" class="navbar-logo">
+        </a>
+
+        <div class="nav-desktop">
+            <a href="{{ url_for('routes.browse_routes_page') }}">Explore</a>
+            <a href="{{ url_for('routes.add_routes_page') }}">Contribute</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('routes.profile') }}">Profile</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+        </div>
+
+        <button class="hamburger-button" id="hamburger-button" aria-label="Open menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </nav>
+
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="{{ url_for('routes.browse_routes_page') }}">Explore</a>
+        <a href="{{ url_for('routes.add_routes_page') }}">Contribute</a>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('routes.profile') }}">Profile</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Login</a>
+            <a href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/nav.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

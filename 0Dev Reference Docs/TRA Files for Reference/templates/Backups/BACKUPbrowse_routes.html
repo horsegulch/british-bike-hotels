@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Routes - Advanced Filters</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            padding: 0;
+            background-color: #FAF7F2; 
+            color: #3a501a; 
+            line-height: 1.6;
+        }
+        .navbar {
+            background-color: #3a501a; 
+            padding: 5px 20px; /* Adjusted padding for logo */
+            display: flex; /* Use flexbox for alignment */
+            align-items: center; /* Vertically align items */
+            justify-content: space-between; /* Space between logo and links */
+            margin-bottom: 20px;
+        }
+        .navbar-logo-link {
+            display: inline-block; /* Allows setting height/width if needed */
+        }
+        .navbar-logo {
+            height: 40px; /* Adjust as needed */
+            width: auto; /* Maintain aspect ratio */
+            vertical-align: middle; /* Align with text if needed, though flex handles this */
+        }
+        .navbar-links {
+            /* Links will be on the right due to justify-content: space-between */
+        }
+        .navbar a { 
+            color: #FAF7F2; 
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 10px; /* Adjusted margin for links */
+        }
+        .navbar a:hover { 
+            color: #f3ba19; 
+        }
+        .container {
+            width: 95%;
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #FFFFFF; 
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #3a501a; 
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .controls-outer-container {
+            background-color: #E8EBE4; 
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .controls-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .control-group label {
+            font-size: 0.85em;
+            color: #3a501a; 
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .control-group label .slider-value-display {
+            font-weight: bold;
+            color: #3a501a; 
+        }
+        .clear-filter-btn {
+            font-size: 0.75em;
+            padding: 1px 4px;
+            margin-left: 8px;
+            background-color: #FBEBCD; 
+            color: #3a501a; 
+            border: 1px solid #f3ba19; 
+            border-radius: 3px;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: bold;
+        }
+        .clear-filter-btn:hover {
+            background-color: #f3ba19; 
+            color: #3a501a; 
+        }
+        #searchInput, #startLocationFilter {
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #C9D3B8; 
+            border-radius: 4px;
+            box-sizing: border-box;
+            width: 100%;
+            background-color: #FCFBF8;
+        }
+        #searchInput:focus, #startLocationFilter:focus {
+            border-color: #f3ba19; 
+            box-shadow: 0 0 0 0.2rem rgba(243, 186, 25, 0.25); 
+        }
+        input[type="range"] {
+            padding: 0;
+            margin-top: 5px;
+        }
+        .ui-slider {
+            position: relative; text-align: left; margin-top: 8px; margin-bottom: 8px; height: 0.8em;
+            background: #E8EBE4; 
+        }
+        .ui-slider .ui-slider-handle {
+            position: absolute; z-index: 2; width: 1.2em; height: 1.2em; cursor: default;
+            -ms-touch-action: none; touch-action: none; border-radius: 50%;
+            border: 2px solid #3a501a; 
+            background: #FAF7F2; 
+            outline: none;
+            top: 50%; margin-top: -0.6em;
+        }
+        .ui-slider .ui-slider-range {
+            position: absolute; z-index: 1; font-size: .7em; display: block;
+            border: 0; background-position: 0 0;
+            background: #f3ba19; 
+            border-radius: 0.4em; height: 100%;
+        }
+        .reset-button-container { margin-top: 15px; text-align: right; }
+        #resetFiltersButton {
+            background-color: #3a501a; 
+            color: #FAF7F2; 
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        #resetFiltersButton:hover {
+            background-color: #2B3A13; 
+        }
+
+        #routesTable { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; }
+        #routesTable th, #routesTable td {
+            border: 1px solid #D8DCD8; 
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+        #routesTable th {
+            background-color: #E8EBE4; 
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            color: #3a501a; 
+        }
+        #routesTable th.th-sort-asc::after, #routesTable th.th-sort-desc::after { content: ''; display: inline-block; margin-left: 5px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; }
+        #routesTable th.th-sort-asc::after { border-bottom: 5px solid #3a501a; } 
+        #routesTable th.th-sort-desc::after { border-top: 5px solid #3a501a; } 
+        #routesTable tbody tr:nth-child(even) { background-color: #F7F9F5; }
+        #routesTable tbody tr:hover { background-color: #C9D3B8; }
+        #routesTable a {
+            color: #3a501a; 
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #routesTable a:hover {
+            text-decoration: underline;
+            color: #f3ba19; 
+        }
+        .details-unavailable { color: #6c757d; font-style: italic; }
+
+        .message-common {
+            text-align: center;
+            font-size: 1.1em;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        #loadingMessage { color: #3a501a; }
+        #errorMessage {
+            color: #D9534F; 
+            background-color: #FDF0EF;
+            border: 1px solid #D9534F;
+            border-radius: 4px;
+        }
+        #noRoutesMessage { color: #3a501a; }
+
+
+        #browseMapContainer {
+            height: 500px;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #C9D3B8; 
+            border-radius: 8px;
+            display: block;
+        }
+        .route-trace {
+            stroke: #f3ba19; 
+            stroke-width: 3;
+            fill: none;
+            pointer-events: none;
+        }
+
+        .list-view-controls {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        #toggleListViewBtn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            color: #3a501a; 
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        #toggleListViewBtn.hide-state { 
+            background-color: #f3ba19; 
+        }
+        #toggleListViewBtn.hide-state:hover {
+            background-color: #DDA717; 
+        }
+        #toggleListViewBtn.show-state { 
+            background-color: #5F734C; 
+            color: #FAF7F2; 
+        }
+        #toggleListViewBtn.show-state:hover {
+            background-color: #3a501a; 
+        }
+
+        #listContainerWrapper {
+            border: 1px solid #C9D3B8; 
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #FBFAF7; 
+        }
+
+        .marker-cluster-custom {
+            background-clip: padding-box;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #3a501a; 
+        }
+        .marker-cluster-custom div {
+            width: 30px;
+            height: 30px;
+            margin-left: 5px;
+            margin-top: 5px;
+            text-align: center;
+            border-radius: 15px;
+            font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+            line-height: 30px; 
+        }
+        .marker-cluster-custom span {
+            line-height: 30px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+    <a href="/" class="navbar-logo-link">
+        <img src="/static/images/TRA Logo.png" alt="The Ride Archive Logo" class="navbar-logo">
+    </a>
+    <div class="navbar-links">
+        <a href="/">Home</a>
+        <a href="/browse">Browse Routes</a>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('add_routes_page') }}">Add a Route</a>
+            <a href="{{ url_for('profile') }}">My Profile</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        {% endif %}
+    </div>
+    </div>
+
+    <div class="container">
+        <h1>Available Routes</h1>
+
+        <div class="controls-outer-container">
+
+        <div class="controls-outer-container">
+            <div class="controls-container">
+                <div class="control-group">
+                    <label for="searchInput">Search Name: <button class="clear-filter-btn" id="clearSearchNameBtn" title="Clear search name">x</button></label>
+                    <input type="text" id="searchInput" placeholder="Search by route name...">
+                </div>
+                <div class="control-group">
+                    <label for="startLocationFilter">Start Location: <button class="clear-filter-btn" id="clearStartLocationBtn" title="Clear start location">x</button></label>
+                    <input type="text" id="startLocationFilter" placeholder="Filter by start location...">
+                </div>
+                <div class="control-group">
+                    <label for="difficultySlider">Difficulty Score: <span id="difficultySliderValue" class="slider-value-display">0 - 500</span> <button class="clear-filter-btn" id="clearDifficultyBtn" title="Clear difficulty filter">x</button></label>
+                    <div id="difficultySlider"></div>
+                </div>
+                <div class="control-group">
+                    <label for="distanceSlider">Distance (km): <span id="distanceSliderValue" class="slider-value-display">0 - 500</span> <button class="clear-filter-btn" id="clearDistanceBtn" title="Clear distance filter">x</button></label>
+                    <div id="distanceSlider"></div>
+                </div>
+                <div class="control-group">
+                    <label for="tegaSlider">TEGa (m): <span id="tegaSliderValue" class="slider-value-display">0 - 5000</span> <button class="clear-filter-btn" id="clearTEGaBtn" title="Clear TEGa filter">x</button></label>
+                    <div id="tegaSlider"></div>
+                </div>
+            </div>
+            <div class="reset-button-container">
+                <button id="resetFiltersButton">Reset All Filters</button>
+            </div>
+        </div>
+
+
+        <div id="browseMapContainer"></div>
+
+        <div id="compareContainer" style="text-align: center; margin-bottom: 20px; display: none;">
+            <button id="compareBtn" class="hero-cta-button">Compare Selected Routes</button>
+        </div>
+
+        <div id="listContainerWrapper" style="display: block;"> <div id="loadingMessage" class="message-common">Loading routes...</div>
+            <div id="errorMessage" class="message-common" style="display: none;"></div>
+            <table id="routesTable" style="display: none;"> <thead>
+                    <tr>
+                        <th></th>
+                        <th data-column-index="0">Route Name</th>
+                        <th data-column-index="1">Start Location</th>
+                        <th data-column-index="2">Distance (km)</th>
+                        <th data-column-index="3">TEGa (m)</th>
+                        <th data-column-index="4">Difficulty Score</th>
+                        <th data-column-index="5">Date Added</th>
+                    </tr>
+                </thead>
+                <tbody id="routesTableBody"></tbody>
+            </table>
+            <p id="noRoutesMessage" class="message-common" style="display: none;">No routes match your criteria.</p>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // DOM Element References
+        const routesTableEl = document.getElementById('routesTable');
+        const routesTableBodyEl = document.getElementById('routesTableBody');
+        const browseMapContainerEl = document.getElementById('browseMapContainer');
+        const listContainerWrapperEl = document.getElementById('listContainerWrapper');
+        const searchInputEl = document.getElementById('searchInput'); 
+        const startLocationFilterEl = document.getElementById('startLocationFilter'); 
+        const difficultySliderValueEl = document.getElementById('difficultySliderValue'); 
+        const distanceSliderValueEl = document.getElementById('distanceSliderValue'); 
+        const tegaSliderValueEl = document.getElementById('tegaSliderValue'); 
+        const resetFiltersButtonEl = document.getElementById('resetFiltersButton'); 
+        const clearSearchNameBtnEl = document.getElementById('clearSearchNameBtn'); 
+        const clearStartLocationBtnEl = document.getElementById('clearStartLocationBtn'); 
+        const clearDifficultyBtnEl = document.getElementById('clearDifficultyBtn'); 
+        const clearDistanceBtnEl = document.getElementById('clearDistanceBtn'); 
+        const clearTEGaBtnEl = document.getElementById('clearTEGaBtn'); 
+        const loadingMessageEl = document.getElementById('loadingMessage');
+        const errorMessageEl = document.getElementById('errorMessage');
+        const noRoutesMessageEl = document.getElementById('noRoutesMessage');
+
+
+        // State Variables
+        let browseMapInstance = null;
+        let currentMarkersLayer = null;
+        let currentRouteTraceLayer = null;
+        let displayedTraceRouteId = null;
+        let currentSortColumnIndex = -1;
+        let currentSortAscending = true;
+        let allFetchedRoutes = []; 
+
+        // Constants for Filters and Map
+        const defaultMinDifficulty = 0, defaultMaxDifficulty = 500, difficultyStep = 5;
+        const defaultMinDistance = 0, defaultMaxDistance = 500, distanceStep = 10;
+        const defaultMinTEGa = 0, defaultMaxTEGa = 5000, tegaStep = 100;
+        const TRACE_DISPLAY_ZOOM_THRESHOLD = 8; 
+
+        const greenIcon = L.divIcon({
+            html: `<svg viewBox="0 0 24 24" width="28px" height="28px" fill="#3a501a" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+            className: 'custom-leaflet-div-icon', 
+            iconSize: [28, 28],
+            iconAnchor: [14, 28], 
+            popupAnchor: [0, -28] 
+        });
+
+
+        async function fetchAndDisplayRoutes() {
+            loadingMessageEl.style.display = 'block';
+            errorMessageEl.style.display = 'none';
+            routesTableEl.style.display = 'none'; 
+            noRoutesMessageEl.style.display = 'none'; 
+
+            if (browseMapContainerEl.offsetWidth > 0 && browseMapContainerEl.offsetHeight > 0) {
+                 initBrowseMapIfNeeded();
+            }
+
+            routesTableBodyEl.innerHTML = '';
+            try {
+                const response = await fetch('/api/list_saved_routes');
+                if (!response.ok) {
+                    let errorDetails = `HTTP error! Status: ${response.status} (${response.statusText || 'Unknown Status'})`;
+                    try { const errorData = await response.json(); if (errorData && errorData.error) { errorDetails = errorData.error; } } catch (e_json) { /* ignore */ }
+                    throw new Error(errorDetails);
+                }
+                allFetchedRoutes = await response.json();
+                resetAllFilters(false); 
+            } catch (error) {
+                console.error('Error fetching routes:', error);
+                loadingMessageEl.style.display = 'none';
+                errorMessageEl.textContent = `Error loading routes: ${error.message}. Please check console.`;
+                errorMessageEl.style.display = 'block';
+                routesTableEl.style.display = 'none';
+                noRoutesMessageEl.style.display = 'none';
+            }
+        }
+
+        function initBrowseMapIfNeeded() {
+            if (!browseMapInstance && document.body.contains(browseMapContainerEl) && browseMapContainerEl.offsetWidth > 0 && browseMapContainerEl.offsetHeight > 0) {
+                console.log("Initializing Browse Map with Thunderforest Landscape...");
+                browseMapInstance = L.map('browseMapContainer').setView([54.5, -2.5], 6);
+                const apiKey = 'aff148878c474171828fa3492e508298'; 
+                L.tileLayer(`https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${apiKey}`, {
+                    maxZoom: 22, 
+                    attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(browseMapInstance);
+                browseMapInstance.on('zoomend', handleMapZoomEnd);
+                console.log("Browse Map Initialized with Thunderforest Landscape.");
+            } else if (browseMapInstance && browseMapContainerEl.style.display === 'block') {
+                requestAnimationFrame(() => { if(browseMapInstance) browseMapInstance.invalidateSize(true); });
+            }
+        }
+
+        function clearCurrentRouteTrace() {
+             if (currentRouteTraceLayer && browseMapInstance) {
+                browseMapInstance.removeLayer(currentRouteTraceLayer);
+                currentRouteTraceLayer = null;
+            }
+        }
+
+        async function displayRouteTrace(routeId) {
+            if (!browseMapInstance || !routeId) return;
+            if (displayedTraceRouteId === routeId && currentRouteTraceLayer) return; 
+
+            clearCurrentRouteTrace();
+            browseMapContainerEl.style.cursor = 'wait';
+            try {
+                const response = await fetch(`/api/routes/${routeId}`);
+                if (!response.ok) throw new Error(`Failed to fetch route details. Status: ${response.status}`);
+                const routeData = await response.json();
+                if (routeData && routeData.track_points && routeData.track_points.length > 0) {
+                    const latLngs = routeData.track_points.map(p => [p.lat, p.lon]).filter(p => p[0] != null && p[1] != null);
+                    if (latLngs.length > 0) {
+                        currentRouteTraceLayer = L.polyline(latLngs, { className: 'route-trace' }).addTo(browseMapInstance); 
+                        displayedTraceRouteId = routeId;
+                    } else { displayedTraceRouteId = null; }
+                } else { displayedTraceRouteId = null; }
+            } catch (error) {
+                console.error(`Error displaying route trace for ${routeId}:`, error);
+                displayedTraceRouteId = null;
+            } finally {
+                browseMapContainerEl.style.cursor = '';
+            }
+        }
+
+        function handleMapZoomEnd() {
+            if (!browseMapInstance) return;
+            const currentZoom = browseMapInstance.getZoom();
+            if (currentZoom < TRACE_DISPLAY_ZOOM_THRESHOLD) {
+                clearCurrentRouteTrace();
+            } else if (displayedTraceRouteId && !currentRouteTraceLayer) {
+                displayRouteTrace(displayedTraceRouteId); 
+            }
+        }
+
+        function updateBrowseMapMarkers(routesToDisplay) {
+            if (!browseMapInstance) {
+                if (browseMapContainerEl.offsetWidth > 0 && browseMapContainerEl.offsetHeight > 0) {
+                    initBrowseMapIfNeeded();
+                }
+                if (!browseMapInstance) { 
+                    console.warn("Map not initialized for markers.");
+                    return;
+                }
+            }
+
+            if (currentMarkersLayer) { 
+                currentMarkersLayer.clearLayers(); 
+            } else { 
+                currentMarkersLayer = L.markerClusterGroup({
+                    iconCreateFunction: function(cluster) {
+                        const count = cluster.getChildCount();
+                        let c = ' marker-cluster-custom'; 
+                        return L.divIcon({ 
+                            html: `<div style="background-color: #f3ba19; width: 30px; height: 30px; margin-left: 5px; margin-top: 5px; text-align: center; border-radius: 15px; line-height: 30px; font-weight: bold; color: #3a501a;"><span>${count}</span></div>`,
+                            className: 'marker-cluster' + c, 
+                            iconSize: L.point(40, 40) 
+                        });
+                    }
+                });
+                browseMapInstance.addLayer(currentMarkersLayer); 
+            }
+
+            if (!routesToDisplay || routesToDisplay.length === 0) {
+                if (displayedTraceRouteId && !routesToDisplay.find(r => r._id === displayedTraceRouteId)) {
+                    clearCurrentRouteTrace();
+                }
+                return;
+            }
+
+            let validMarkersExist = false;
+            routesToDisplay.forEach(route => {
+                if (route.start_coordinates && route.start_coordinates.lat != null && route.start_coordinates.lon != null) {
+                    const marker = L.marker([route.start_coordinates.lat, route.start_coordinates.lon], { 
+                        icon: greenIcon, 
+                        routeId: route._id 
+                    }); 
+                    marker.bindPopup(`<b><a href="/route/${route._id}" target="_blank">${route.route_name || route.original_identifier}</a></b><br>Score: ${parseFloat(route.difficulty_score || 0).toFixed(1)}`);
+                    marker.on('click', (e) => {
+                        const clickedRouteId = e.target.options.routeId;
+                        if (browseMapInstance.getZoom() >= TRACE_DISPLAY_ZOOM_THRESHOLD) {
+                           displayRouteTrace(clickedRouteId);
+                        } else {
+                            clearCurrentRouteTrace();
+                            displayedTraceRouteId = clickedRouteId; 
+                        }
+                    });
+                    currentMarkersLayer.addLayer(marker); 
+                    validMarkersExist = true;
+                }
+            });
+
+            if (validMarkersExist && browseMapContainerEl.offsetParent !== null) { 
+                if (!currentRouteTraceLayer) { 
+                    try {
+                        const bounds = currentMarkersLayer.getBounds();
+                        if (bounds.isValid()) {
+                            browseMapInstance.fitBounds(bounds.pad(0.2));
+                        } else if (routesToDisplay.length > 0) {
+                             browseMapInstance.setView([54.5, -2.5], 6);
+                        }
+                    } catch(e) {
+                        console.warn("Could not fit map bounds:", e);
+                        if (routesToDisplay.length > 0) browseMapInstance.setView([54.5, -2.5], 6);
+                    }
+                }
+            } else if (!validMarkersExist) {
+                 browseMapInstance.setView([54.5, -2.5], 6); 
+            }
+        }
+
+        function applyAllFiltersAndSort() {
+            const searchTerm = searchInputEl.value.toLowerCase().trim();
+            const startLocationTerm = startLocationFilterEl.value.toLowerCase().trim();
+            const difficultyValues = $("#difficultySlider").slider("values");
+            const minDifficulty = difficultyValues[0]; const maxDifficulty = difficultyValues[1];
+            const distanceValues = $("#distanceSlider").slider("values");
+            const minDistance = distanceValues[0]; const maxDistance = distanceValues[1];
+            const tegaValues = $("#tegaSlider").slider("values");
+            const minTEGa = tegaValues[0]; const maxTEGa = tegaValues[1];
+
+            let filteredRoutes = allFetchedRoutes.filter(route => {
+                const routeName = (route.route_name || route.original_identifier || '').toLowerCase();
+                const nameMatch = routeName.includes(searchTerm);
+                const routeStartLocation = (route.start_location_name || '').toLowerCase();
+                const startLocationMatch = routeStartLocation.includes(startLocationTerm);
+                let difficultyMatch = true;
+                if (route.difficulty_score === null || typeof route.difficulty_score === 'undefined') { if (minDifficulty > defaultMinDifficulty || maxDifficulty < defaultMaxDifficulty) difficultyMatch = false; }
+                else { const score = parseFloat(route.difficulty_score); if (score < minDifficulty || score > maxDifficulty) difficultyMatch = false; }
+                let distanceMatch = true;
+                if (route.metrics_summary && route.metrics_summary.distance_km !== null && typeof route.metrics_summary.distance_km !== 'undefined') { const routeDistance = parseFloat(route.metrics_summary.distance_km); if (routeDistance < minDistance || routeDistance > maxDistance) distanceMatch = false; }
+                else { if (minDistance > defaultMinDistance || maxDistance < defaultMaxDistance) distanceMatch = false; }
+                let tegaMatch = true;
+                if (route.metrics_summary && route.metrics_summary.TEGa !== null && typeof route.metrics_summary.TEGa !== 'undefined') { const routeTEGa = parseFloat(route.metrics_summary.TEGa); if (routeTEGa < minTEGa || routeTEGa > maxTEGa) tegaMatch = false; }
+                else { if (minTEGa > defaultMinTEGa || maxTEGa < defaultMaxTEGa) tegaMatch = false; }
+                return nameMatch && startLocationMatch && difficultyMatch && distanceMatch && tegaMatch;
+            });
+
+            if (currentSortColumnIndex !== -1) {
+                const dirModifier = currentSortAscending ? 1 : -1;
+                const sortColIndex = currentSortColumnIndex;
+                filteredRoutes.sort((routeA, routeB) => {
+                    let valA, valB;
+                    switch(sortColIndex) {
+                        case 0: valA = (routeA.route_name || routeA.original_identifier || '').toLowerCase(); valB = (routeB.route_name || routeB.original_identifier || '').toLowerCase(); break;
+                        case 1: valA = (routeA.start_location_name || '').toLowerCase(); valB = (routeB.start_location_name || '').toLowerCase(); break;
+                        case 2: valA = (routeA.metrics_summary && routeA.metrics_summary.distance_km !== null && typeof routeA.metrics_summary.distance_km !== 'undefined') ? parseFloat(routeA.metrics_summary.distance_km) : -Infinity; valB = (routeB.metrics_summary && routeB.metrics_summary.distance_km !== null && typeof routeB.metrics_summary.distance_km !== 'undefined') ? parseFloat(routeB.metrics_summary.distance_km) : -Infinity; break;
+                        case 3: valA = (routeA.metrics_summary && routeA.metrics_summary.TEGa !== null && typeof routeA.metrics_summary.TEGa !== 'undefined') ? parseFloat(routeA.metrics_summary.TEGa) : -Infinity; valB = (routeB.metrics_summary && routeB.metrics_summary.TEGa !== null && typeof routeB.metrics_summary.TEGa !== 'undefined') ? parseFloat(routeB.metrics_summary.TEGa) : -Infinity; break;
+                        case 4: valA = (routeA.difficulty_score !== null && typeof routeA.difficulty_score !== 'undefined') ? parseFloat(routeA.difficulty_score) : -Infinity; valB = (routeB.difficulty_score !== null && typeof routeB.difficulty_score !== 'undefined') ? parseFloat(routeB.difficulty_score) : -Infinity; break;
+                        case 5: valA = routeA.processed_at ? new Date(routeA.processed_at).getTime() : 0; valB = routeB.processed_at ? new Date(routeB.processed_at).getTime() : 0; break;
+                        default: return 0;
+                    }
+                    if (valA < valB) return -1 * dirModifier;
+                    if (valA > valB) return 1 * dirModifier;
+                    return 0;
+                });
+            }
+
+            if (displayedTraceRouteId && !filteredRoutes.find(r => r._id === displayedTraceRouteId)) {
+                clearCurrentRouteTrace();
+            }
+
+            initBrowseMapIfNeeded(); 
+            updateBrowseMapMarkers(filteredRoutes);
+
+            loadingMessageEl.style.display = 'none'; 
+
+            if (isListViewVisible) {
+                listContainerWrapperEl.style.display = 'block';
+                if (errorMessageEl.style.display === 'block') { 
+                    routesTableEl.style.display = 'none';
+                    noRoutesMessageEl.style.display = 'none';
+                } else if (filteredRoutes.length > 0) {
+                    renderTable(filteredRoutes);
+                    routesTableEl.style.display = 'table';
+                    noRoutesMessageEl.style.display = 'none';
+                    errorMessageEl.style.display = 'none';
+                } else {
+                    routesTableBodyEl.innerHTML = '';
+                    routesTableEl.style.display = 'none';
+                    noRoutesMessageEl.textContent = 'No routes match your criteria.';
+                    noRoutesMessageEl.style.display = 'block';
+                    errorMessageEl.style.display = 'none';
+                }
+            } else {
+                listContainerWrapperEl.style.display = 'none'; 
+            }
+        }
+
+        function renderTable(routesToRender) {
+            routesTableBodyEl.innerHTML = '';
+            routesToRender.forEach(route => {
+                const row = routesTableBodyEl.insertRow();
+                const cellCheckbox = row.insertCell();
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'route-checkbox';
+                checkbox.dataset.routeId = route._id; // Store the route ID on the checkbox
+                cellCheckbox.appendChild(checkbox);
+                const cellName = row.insertCell();
+                const routeLink = document.createElement('a');
+                routeLink.href = `/route/${route._id}`;
+                routeLink.textContent = route.route_name || route.original_identifier || 'Unnamed Route';
+                cellName.appendChild(routeLink);
+                const cellStartLocation = row.insertCell();
+                cellStartLocation.textContent = route.start_location_name || 'N/A';
+                cellStartLocation.setAttribute('data-value', route.start_location_name || '');
+                const cellDistance = row.insertCell();
+                let distance = '<span class="details-unavailable">N/A</span>';
+                if (route.metrics_summary && route.metrics_summary.distance_km !== null && typeof route.metrics_summary.distance_km !== 'undefined') {
+                    distance = parseFloat(route.metrics_summary.distance_km).toFixed(2);
+                }
+                cellDistance.innerHTML = distance;
+                cellDistance.setAttribute('data-value', route.metrics_summary && route.metrics_summary.distance_km !== null ? route.metrics_summary.distance_km : -Infinity);
+                const cellTEGa = row.insertCell();
+                let tega = '<span class="details-unavailable">N/A</span>';
+                if (route.metrics_summary && route.metrics_summary.TEGa !== null && typeof route.metrics_summary.TEGa !== 'undefined') {
+                    tega = parseFloat(route.metrics_summary.TEGa).toFixed(0);
+                }
+                cellTEGa.innerHTML = tega;
+                cellTEGa.setAttribute('data-value', route.metrics_summary && route.metrics_summary.TEGa !== null ? route.metrics_summary.TEGa : -Infinity);
+                const cellScore = row.insertCell();
+                let score = '<span class="details-unavailable">N/A</span>';
+                if (route.difficulty_score !== null && typeof route.difficulty_score !== 'undefined') {
+                    score = parseFloat(route.difficulty_score).toFixed(2);
+                }
+                cellScore.innerHTML = score;
+                cellScore.setAttribute('data-value', route.difficulty_score !== null ? route.difficulty_score : -Infinity);
+                const cellDate = row.insertCell();
+                let processedDate = '<span class="details-unavailable">N/A</span>';
+                let dateSortValue = 0;
+                if (route.processed_at && typeof route.processed_at === 'string') {
+                    try {
+                        const dateObj = new Date(route.processed_at);
+                        if (!isNaN(dateObj.getTime())) {
+                            processedDate = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                            dateSortValue = dateObj.getTime();
+                        } else { processedDate = route.processed_at.substring(0, 10); }
+                    } catch (e) { processedDate = route.processed_at.substring(0, 10); }
+                }
+                cellDate.innerHTML = processedDate;
+                cellDate.setAttribute('data-value', dateSortValue);
+            });
+        }
+
+        function sortTable(columnIndex) {
+             if (currentSortColumnIndex === columnIndex) {
+                currentSortAscending = !currentSortAscending;
+            } else {
+                currentSortColumnIndex = columnIndex;
+                currentSortAscending = true;
+            }
+            applyAllFiltersAndSort(); 
+            document.querySelectorAll('#routesTable th').forEach(th => {
+                th.classList.remove('th-sort-asc', 'th-sort-desc');
+            });
+            const activeHeader = document.querySelector(`#routesTable th[data-column-index="${columnIndex}"]`);
+            if (activeHeader) {
+                activeHeader.classList.toggle('th-sort-asc', currentSortAscending);
+                activeHeader.classList.toggle('th-sort-desc', !currentSortAscending);
+            }
+        }
+
+        function resetAllFilters(triggerRender = true) {
+            searchInputEl.value = '';
+            startLocationFilterEl.value = '';
+            $("#difficultySlider").slider("values", [defaultMinDifficulty, defaultMaxDifficulty]);
+            $("#distanceSlider").slider("values", [defaultMinDistance, defaultMaxDistance]);
+            $("#tegaSlider").slider("values", [defaultMinTEGa, defaultMaxTEGa]);
+            currentSortColumnIndex = -1; 
+            document.querySelectorAll('#routesTable th').forEach(th => th.classList.remove('th-sort-asc', 'th-sort-desc'));
+            if (triggerRender) { applyAllFiltersAndSort(); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            $("#difficultySlider").slider({
+                range: true, min: defaultMinDifficulty, max: defaultMaxDifficulty, step: difficultyStep, values: [defaultMinDifficulty, defaultMaxDifficulty],
+                slide: (event, ui) => { difficultySliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]}`; },
+                change: (event, ui) => { difficultySliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]}`; applyAllFiltersAndSort(); }
+            });
+            difficultySliderValueEl.textContent = `${$("#difficultySlider").slider("values", 0)} - ${$("#difficultySlider").slider("values", 1)}`;
+
+            $("#distanceSlider").slider({
+                range: true, min: defaultMinDistance, max: defaultMaxDistance, step: distanceStep, values: [defaultMinDistance, defaultMaxDistance],
+                slide: (event, ui) => { distanceSliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]} km`; },
+                change: (event, ui) => { distanceSliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]} km`; applyAllFiltersAndSort(); }
+            });
+            distanceSliderValueEl.textContent = `${$("#distanceSlider").slider("values", 0)} - ${$("#distanceSlider").slider("values", 1)} km`;
+
+            $("#tegaSlider").slider({
+                range: true, min: defaultMinTEGa, max: defaultMaxTEGa, step: tegaStep, values: [defaultMinTEGa, defaultMaxTEGa],
+                slide: (event, ui) => { tegaSliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]} m`; },
+                change: (event, ui) => { tegaSliderValueEl.textContent = `${ui.values[0]} - ${ui.values[1]} m`; applyAllFiltersAndSort(); }
+            });
+            tegaSliderValueEl.textContent = `${$("#tegaSlider").slider("values", 0)} - ${$("#tegaSlider").slider("values", 1)} m`;
+
+            fetchAndDisplayRoutes();
+
+            document.querySelectorAll('#routesTable th').forEach(header => {
+                header.addEventListener('click', () => {
+                    const columnIndex = parseInt(header.getAttribute('data-column-index'));
+                    if (!isNaN(columnIndex)) sortTable(columnIndex);
+                });
+            });
+
+            searchInputEl.addEventListener('input', applyAllFiltersAndSort);
+            startLocationFilterEl.addEventListener('input', applyAllFiltersAndSort);
+            resetFiltersButtonEl.addEventListener('click', () => resetAllFilters(true));
+
+            clearSearchNameBtnEl.addEventListener('click', () => { searchInputEl.value = ''; applyAllFiltersAndSort(); });
+            clearStartLocationBtnEl.addEventListener('click', () => { startLocationFilterEl.value = ''; applyAllFiltersAndSort(); });
+            clearDifficultyBtnEl.addEventListener('click', () => { $("#difficultySlider").slider("values", [defaultMinDifficulty, defaultMaxDifficulty]); });
+            clearDistanceBtnEl.addEventListener('click', () => { $("#distanceSlider").slider("values", [defaultMinDistance, defaultMaxDistance]); });
+            clearTEGaBtnEl.addEventListener('click', () => { $("#tegaSlider").slider("values", [defaultMinTEGa, defaultMaxTEGa]); });
+
+        const compareContainer = document.getElementById('compareContainer');
+        const compareBtn = document.getElementById('compareBtn');
+        const routesTableBody = document.getElementById('routesTableBody');
+        let selectedRouteIds = new Set();
+
+        function updateCompareButton() {
+            if (selectedRouteIds.size >= 2) {
+         const ids = Array.from(selectedRouteIds).join(',');
+        compareBtn.href = `/compare?ids=${ids}`;
+        compareContainer.style.display = 'block'; // Show the button
+        } else {
+        compareContainer.style.display = 'none'; // Hide the button
+    }
+}
+
+routesTableBody.addEventListener('change', (event) => {
+    if (event.target.classList.contains('route-checkbox')) {
+        const routeId = event.target.dataset.routeId;
+        if (event.target.checked) {
+            selectedRouteIds.add(routeId);
+        } else {
+            selectedRouteIds.delete(routeId);
+        }
+        updateCompareButton();
+    }
+});
+
+    </script>
+</body>
+</html>

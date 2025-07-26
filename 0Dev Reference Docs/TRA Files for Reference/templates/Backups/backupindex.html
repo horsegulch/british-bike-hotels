@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPX Route Difficulty Scorer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
+            margin: 20px; 
+            background-color: #f8f9fa; 
+            color: #343a40; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            line-height: 1.6;
+        }
+        .container { 
+            background-color: #ffffff; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            width: 90%; 
+            max-width: 900px; /* Wider for more detailed table */
+            margin-bottom: 25px;
+        }
+        h1 { 
+            color: #212529; 
+            text-align: center; 
+            margin-bottom: 25px;
+        }
+        h2 { /* "Results:" heading */
+            color: #495057; 
+            margin-top: 0;
+            border-bottom: 1px solid #dee2e6; 
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        /* Single file specific displays - will be hidden for multi-file */
+        #singleFileSpecifics h3#routeTitle { 
+            margin-top: 0px; 
+            margin-bottom: 10px; 
+            text-align: center; 
+            color: #007bff; 
+            font-size: 1.4em;
+        }
+        #singleFileSpecifics h3.score-header { 
+            text-align: center;
+            font-size: 1.75em;
+            color: #28a745; 
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        #singleFileSpecifics pre#metricsOutput { 
+            background-color: #e9ecef; 
+            padding: 15px; 
+            border-radius: 6px; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            font-size: 0.9em;
+            border: 1px solid #ced4da;
+            max-height: 300px; 
+            overflow-y: auto;
+        }
+
+        input[type="file"] { 
+            margin-bottom: 15px; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff; 
+            color: white; 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            display: block; 
+            margin: 15px auto;
+            transition: background-color 0.2s ease-in-out; 
+        }
+        button:hover { 
+            background-color: #0056b3; 
+        }
+        #results { 
+            margin-top: 25px; 
+            padding: 20px; 
+            border: 1px solid #dee2e6; 
+            border-radius: 8px; 
+            background-color: #f8f9fa; 
+        }
+        #loading { 
+            display: none; 
+            margin-top: 15px; 
+            text-align: center; 
+            font-style: italic;
+            color: #6c757d; 
+        }
+        .error { 
+            color: #dc3545; 
+            font-weight: bold; 
+            text-align: center;
+            padding: 10px;
+            background-color: #f8d7da; 
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+        .chart-container { 
+            width: 100%; 
+            max-width: 650px; /* Increased chart width */
+            margin: 25px auto; 
+            display: none; /* Initially hidden, shown when data is ready */
+        }
+        #resultsTable {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            font-size: 0.9em; 
+        }
+        #resultsTable th, #resultsTable td {
+            border: 1px solid #dee2e6;
+            padding: 6px 8px; 
+            text-align: left;
+            vertical-align: top;
+        }
+        #resultsTable th {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        .help-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+        }
+        .help-box h4 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 1px solid #ced4da;
+            padding-bottom: 8px;
+        }
+        .help-box dl dt {
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 10px;
+        }
+        .help-box dl dd {
+            margin-left: 0;
+            padding-left: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Route File(s) to Calculate Difficulty</h1>
+        
+        <form id="uploadForm">
+            <input type="file" id="gpxFile" name="gpx_files[]" accept=".gpx,.tcx" multiple required>
+            <button type="submit">Calculate Difficulty</button>
+        </form>
+
+        <div id="loading">Processing, please wait...</div>
+
+        <div id="results">
+            <h2>Results:</h2>
+            <div id="singleFileSpecifics" style="display: none;">
+                <h3 id="routeTitle"></h3> 
+                <div id="scoreOutput"></div>
+                <pre id="metricsOutput"></pre> 
+            </div>
+            
+            <div class="chart-container" id="radarChartContainer">
+                <canvas id="metricsRadarChart"></canvas>
+            </div>
+
+            <div id="multiResultsTableContainer" style="display: none;"> 
+                <table id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Route Name</th>
+                            <th>Distance (km)</th>
+                            <th>TEGa (m)</th>
+                            <th>PDD (%)</th>
+                            <th>MCg (%)</th>
+                            <th>ACg (%)</th>
+                            <th>ADg (%)</th>
+                            <th>Difficulty Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody"></tbody>
+                </table>
+            </div>
+            <div id="errorOutput"></div>
+        </div>
+    </div>
+
+    <div class="container help-box">
+        <h4>Glossary of Terms</h4>
+        <dl>
+            <dt>Route Name:</dt><dd>Name of the route as found in the GPX file, or the filename if no name is present.</dd>
+            <dt>Distance (km):</dt><dd>Total length of the route in kilometers.</dd>
+            <dt>TEGa (m):</dt><dd>Total Elevation Gain (Ascent) in meters, based on smoothed elevation data. Represents the total amount climbed.</dd>
+            <dt>PDD (%):</dt><dd>Proportion of Distance Downhill. The percentage of the route's total distance spent descending (e.g., 0.50 means 50%).</dd>
+            <dt>MCg (%):</dt><dd>Max Climb Gradient. The steepest gradient found over a defined short segment (e.g., ~100m) of a climb, based on smoothed elevation.</dd>
+            <dt>ACg (%):</dt><dd>Average Climb Gradient. The average gradient of all "Significant Climbs" on the route. A significant climb meets specific criteria for length, average gradient, and overall effort (distance * gradient).</dd>
+            <dt>ADg (%):</dt><dd>Average Descent Gradient. The average gradient of all "Significant Descents" on the route. A significant descent meets specific criteria for length and average gradient. Displayed as a positive value.</dd>
+            <dt>Difficulty Score:</dt><dd>The overall calculated difficulty of the route, taking all the above metrics into account. Higher scores indicate greater difficulty (uncapped).</dd>
+        </dl>
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const gpxFileInput = document.getElementById('gpxFile');
+        const resultsDiv = document.getElementById('results');
+        
+        const singleFileSpecificsDiv = document.getElementById('singleFileSpecifics');
+        const routeTitleDiv = document.getElementById('routeTitle'); 
+        const scoreOutputDiv = document.getElementById('scoreOutput');
+        const metricsOutputPre = document.getElementById('metricsOutput'); 
+        const errorOutputDiv = document.getElementById('errorOutput');
+        const loadingDiv = document.getElementById('loading');
+        
+        const radarChartContainer = document.getElementById('radarChartContainer'); // Generic chart container
+        const chartCanvas = document.getElementById('metricsRadarChart');
+        let metricsChart = null; 
+
+        const multiResultsTableContainer = document.getElementById('multiResultsTableContainer');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+
+        const refMaxValues = {
+            distance_km: 250, TEGa: 4500, ACg: 10, MCg: 25, ADg: 8 
+        };
+
+        // Predefined colors for chart datasets (add more if you expect more than 10 files at once)
+        const chartColors = [
+            'rgba(0, 123, 255, 0.7)', 'rgba(255, 99, 132, 0.7)', 'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 206, 86, 0.7)', 'rgba(153, 102, 255, 0.7)', 'rgba(255, 159, 64, 0.7)',
+            'rgba(54, 162, 235, 0.7)', 'rgba(201, 203, 207, 0.7)', 'rgba(210, 100, 100, 0.7)',
+            'rgba(100, 210, 100, 0.7)' 
+        ];
+        const chartBackgroundColors = [
+            'rgba(0, 123, 255, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)',
+            'rgba(255, 206, 86, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)',
+            'rgba(54, 162, 235, 0.2)', 'rgba(201, 203, 207, 0.2)', 'rgba(210, 100, 100, 0.2)',
+            'rgba(100, 210, 100, 0.2)'
+        ];
+
+
+        function normalizeMetric(value, metricName) {
+            if (value === null || value === undefined || refMaxValues[metricName] === undefined) return 0;
+            const numericValue = parseFloat(value);
+            if (isNaN(numericValue) || refMaxValues[metricName] === 0) return 0;
+            const normalized = (Math.min(numericValue, refMaxValues[metricName]) / refMaxValues[metricName]) * 100;
+            return Math.max(0, Math.min(normalized, 100)); 
+        }
+
+        async function processSingleFile(file) {
+            const formData = new FormData();
+            formData.append('gpx_file', file);
+            try {
+                const response = await fetch('/process_route_file', { method: 'POST', body: formData });
+                if (response.ok) {
+                    return await response.json();
+                } else {
+                    const errorData = await response.json().catch(() => ({ error: "Server error processing file.", details: response.statusText }));
+                    return { filename: file.name, error: `Error ${response.status}: ${errorData.error || response.statusText}`, details: errorData.details };
+                }
+            } catch (error) {
+                return { filename: file.name, error: `Network error: ${error.message}` };
+            }
+        }
+
+        uploadForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Clear all previous outputs and hide sections
+            routeTitleDiv.innerHTML = ''; 
+            scoreOutputDiv.innerHTML = '';
+            metricsOutputPre.textContent = ''; 
+            errorOutputDiv.innerHTML = '';
+            resultsTableBody.innerHTML = ''; 
+            singleFileSpecificsDiv.style.display = 'none'; 
+            radarChartContainer.style.display = 'none'; // Hide chart container
+            multiResultsTableContainer.style.display = 'none'; 
+
+            if (metricsChart) {
+                metricsChart.destroy(); 
+                metricsChart = null;
+            }
+            loadingDiv.style.display = 'block';
+            resultsDiv.style.borderColor = '#dee2e6'; 
+            resultsDiv.style.backgroundColor = '#f8f9fa';
+
+            const files = gpxFileInput.files;
+            if (!files.length) {
+                errorOutputDiv.innerHTML = '<p class="error">Please select one or more GPX files.</p>';
+                loadingDiv.style.display = 'none';
+                resultsDiv.style.borderColor = '#f5c6cb';
+                resultsDiv.style.backgroundColor = '#f8d7da';
+                return;
+            }
+
+            const allPromises = Array.from(files).map(file => processSingleFile(file));
+            const allResults = await Promise.all(allPromises);
+            loadingDiv.style.display = 'none';
+            let hasErrors = false;
+            
+            const validResults = allResults.filter(data => data && !data.error);
+
+            if (validResults.length === 0 && allResults.length > 0) { // All files resulted in errors
+                 let combinedErrorMsg = allResults.map(data => `<p class="error">Error processing ${data.filename || 'file'}: ${data.error || 'Unknown error'}</p>`).join('');
+                 errorOutputDiv.innerHTML = combinedErrorMsg;
+                 resultsDiv.style.borderColor = '#f5c6cb'; 
+                 resultsDiv.style.backgroundColor = '#f8d7da';
+                 return;
+            }
+
+
+            // Prepare datasets for the chart
+            const chartLabels = ['Distance', 'TEGa', 'Avg Climb', 'Max Climb %', 'Avg Descent %'];
+            const chartDatasets = [];
+
+            validResults.forEach((data, index) => {
+                const routeMetrics = data.metrics;
+                const chartDataValues = [
+                    normalizeMetric(routeMetrics.distance_km, 'distance_km'),
+                    normalizeMetric(routeMetrics.TEGa, 'TEGa'),
+                    normalizeMetric(routeMetrics.ACg, 'ACg'),
+                    normalizeMetric(routeMetrics.MCg, 'MCg'),
+                    normalizeMetric(Math.abs(routeMetrics.ADg || 0), 'ADg')
+                ];
+                chartDatasets.push({
+                    label: (routeMetrics.route_name && routeMetrics.route_name !== "N/A") ? routeMetrics.route_name : data.filename,
+                    data: chartDataValues,
+                    backgroundColor: chartBackgroundColors[index % chartBackgroundColors.length],
+                    borderColor: chartColors[index % chartColors.length],
+                    borderWidth: 2,
+                    pointBackgroundColor: chartColors[index % chartColors.length],
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: chartColors[index % chartColors.length]
+                });
+            });
+
+            if (chartDatasets.length > 0) {
+                radarChartContainer.style.display = 'block'; // Show chart container
+                const chartContext = chartCanvas.getContext('2d');
+                metricsChart = new Chart(chartContext, {
+                    type: 'radar',
+                    data: {
+                        labels: chartLabels,
+                        datasets: chartDatasets
+                    },
+                    options: { 
+                        responsive: true, maintainAspectRatio: true, 
+                        scales: { r: { angleLines: { display: true, color: 'rgba(0, 0, 0, 0.1)' }, 
+                            suggestedMin: 0, suggestedMax: 100, grid: { color: 'rgba(0, 0, 0, 0.1)' }, 
+                            pointLabels: { font: { size: 11, weight: '500' }, color: '#333' }, 
+                            ticks: { stepSize: 20, backdropColor: 'rgba(255, 255, 255, 0.75)', color: '#555' }
+                        }},
+                        plugins: { legend: { position: 'bottom', labels: {color: '#333', font: { size: 12 }}},
+                            tooltip: { callbacks: { label: function(context) {
+                                let label = context.dataset.label || ''; if (label) {label += ': ';}
+                                if (context.parsed.r !== null) {label += context.parsed.r.toFixed(1);}
+                                return label;
+                            }}}
+                        }
+                    }
+                });
+            }
+
+
+            if (files.length === 1 && validResults.length === 1) { 
+                singleFileSpecificsDiv.style.display = 'block';
+                const data = validResults[0]; // The single valid result
+                if (data.metrics && data.metrics.route_name && data.metrics.route_name !== "N/A") {
+                    routeTitleDiv.textContent = `${data.metrics.route_name}`;
+                } else if (data.filename) {
+                     routeTitleDiv.textContent = `${data.filename}`; 
+                } else {
+                    routeTitleDiv.textContent = '(Unnamed Route)';
+                }
+                scoreOutputDiv.innerHTML = `<h3 class="score-header">Difficulty Score: ${data.difficulty_score}</h3>`;
+                
+                let metricsText = 'Extracted Metrics (Raw Values):\n';
+                for (const key in data.metrics) {
+                    if (data.metrics.hasOwnProperty(key)) {
+                        let value = data.metrics[key];
+                        if (typeof value === 'number') value = parseFloat(value.toFixed(3));
+                        metricsText += `${key}: ${value}\n`;
+                    }
+                }
+                metricsOutputPre.textContent = metricsText;
+                resultsDiv.style.borderColor = '#c3e6cb'; 
+                resultsDiv.style.backgroundColor = '#d4edda';
+
+            } else if (files.length > 1) { // Handle multiple file uploads - display table
+                multiResultsTableContainer.style.display = 'block'; 
+                singleFileSpecificsDiv.style.display = 'none'; 
+
+                allResults.forEach(data => { // Iterate all results to show errors in table too
+                    const row = resultsTableBody.insertRow();
+                    const cellRouteName = row.insertCell();
+                    const cellDist = row.insertCell();
+                    const cellTEGa = row.insertCell();
+                    const cellPDD = row.insertCell();
+                    const cellMCg = row.insertCell();
+                    const cellACg = row.insertCell();
+                    const cellADg = row.insertCell();
+                    const cellScore = row.insertCell();
+
+                    if (data && !data.error) {
+                        cellRouteName.textContent = (data.metrics && data.metrics.route_name && data.metrics.route_name !== "N/A") ? data.metrics.route_name : (data.filename || '(Unnamed)');
+                        cellDist.textContent = data.metrics.distance_km !== null ? parseFloat(data.metrics.distance_km).toFixed(2) : 'N/A';
+                        cellTEGa.textContent = data.metrics.TEGa !== null ? parseFloat(data.metrics.TEGa).toFixed(2) : 'N/A';
+                        cellPDD.textContent = data.metrics.PDD !== null ? (parseFloat(data.metrics.PDD) * 100).toFixed(1) + '%' : 'N/A';
+                        cellMCg.textContent = data.metrics.MCg !== null ? parseFloat(data.metrics.MCg).toFixed(1) + '%' : 'N/A';
+                        cellACg.textContent = data.metrics.ACg !== null ? parseFloat(data.metrics.ACg).toFixed(1) + '%' : 'N/A';
+                        cellADg.textContent = data.metrics.ADg !== null ? parseFloat(data.metrics.ADg).toFixed(1) + '%' : 'N/A';
+                        cellScore.textContent = data.difficulty_score !== null ? data.difficulty_score.toFixed(2) : 'Error';
+                    } else {
+                        cellRouteName.textContent = data.filename || 'File Error';
+                        cellDist.textContent = '-'; cellTEGa.textContent = '-'; cellPDD.textContent = '-';
+                        cellMCg.textContent = '-'; cellACg.textContent = '-'; cellADg.textContent = '-';
+                        cellScore.textContent = `Error: ${data.error || 'Unknown'}`;
+                        cellScore.classList.add('error'); 
+                        hasErrors = true;
+                    }
+                });
+                 if(hasErrors && validResults.length === 0) { // If all files error out
+                     resultsDiv.style.borderColor = '#f5c6cb'; 
+                     resultsDiv.style.backgroundColor = '#f8d7da';
+                } else if (validResults.length > 0) { // If at least one file was successful
+                     resultsDiv.style.borderColor = '#c3e6cb'; 
+                     resultsDiv.style.backgroundColor = '#d4edda';
+                }
+            }
+             // Handle errors for single file upload if it was the only one and failed
+            if (files.length === 1 && validResults.length === 0 && allResults.length === 1) {
+                const data = allResults[0];
+                let errorMessage = `<p class="error">Error processing ${data.filename || 'file'}: ${data.error || 'Unknown error'}</p>`;
+                if(data.details) errorMessage += `<p>Details: ${data.details}</p>`;
+                errorOutputDiv.innerHTML = errorMessage;
+                resultsDiv.style.borderColor = '#f5c6cb'; 
+                resultsDiv.style.backgroundColor = '#f8d7da';
+            }
+
+
+        });
+    </script>
+</body>
+</html>

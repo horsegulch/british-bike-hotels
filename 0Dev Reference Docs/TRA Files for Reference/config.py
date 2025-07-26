@@ -1,0 +1,41 @@
+# config.py - Configuration constants for the GPX Difficulty Scorer
+
+# --- Configuration: Metric Extraction ---
+SMOOTHING_WINDOW_SIZE = 7 
+MCG_SEGMENT_TARGET_DISTANCE_M = 100.0 
+MIN_DIST_FOR_MCG_GRADIENT_CALC_M = 50.0 
+SIG_CLIMB_FACTOR_THRESHOLD = 3500.0 
+SIG_CLIMB_MIN_DISTANCE_M = 250.0     
+SIG_CLIMB_MIN_GRADIENT_PERCENT = 3.0 
+POTENTIAL_CLIMB_START_GRADIENT_THRESHOLD = 1.0 
+SIG_DESCENT_MIN_DISTANCE_M = 500.0     
+SIG_DESCENT_MIN_GRADIENT_PERCENT = -3.0 
+POTENTIAL_DESCENT_START_GRADIENT_THRESHOLD = -1.0 
+
+# --- Configuration: Difficulty Calculation ---
+# Distance Difficulty
+DISTANCE_BASE_ADDITION = 5.0
+DISTANCE_DIFFICULTY_COEFFICIENT_A = 0.003
+# Uphill Impact Component (Linear UF Model)
+MAX_EXPECTED_TEGA = 3500.0
+MAX_EXPECTED_ACG = 12.0
+MAX_EXPECTED_MCG = 45.0 # Normalization ceiling for the calculated MCg
+WEIGHT_TEGA = 0.50
+WEIGHT_ACG = 0.40
+WEIGHT_MCG = 0.10
+LINEAR_UF_SLOPE = 1.2  
+# Downhill Reduction Component
+PDD_THRESHOLD = 0.65
+MAX_ASCENT_FOR_DOWNHILL_REDUCTION = 1000.0
+MIN_AVG_DESCENT_GRADIENT_THRESHOLD = 3.0 
+TARGET_ADG_FOR_MAX_REDUCTION = 7.0
+WEIGHT_PDD_SCORE = 0.7
+WEIGHT_ADG_SCORE = 0.3
+MAX_DOWNHILL_REDUCTION_FACTOR = 0.8 
+# Final Score Minimum
+MIN_DIFFICULTY_SCORE = 0.0
+
+# --- Flask App Specific Configuration (can also stay in app.py or move here) ---
+# UPLOAD_FOLDER = 'uploads' # Relative to app.py location
+# ALLOWED_EXTENSIONS = {'gpx'}
+# MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # 16 MB

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block head %}
+  {{ super() }}
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    /* Fix for map tiles */
+    #planner-map .leaflet-tile {
+      max-width: none !important;
+    }
+    /* Fix for draggable markers */
+    #planner-map .leaflet-interactive {
+      pointer-events: auto !important;
+    }
+
+    /* Styles for the planner map container */
+    #planner-map {
+      height: 75vh;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #C9D3B8;
+      background-color: #E8EBE4;
+      cursor: crosshair;
+    }
+    .planner-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .planner-stats {
+        font-size: 1.1em;
+    }
+    .planner-actions button {
+        padding: 8px 15px;
+        font-family: 'Raleway', sans-serif;
+        font-weight: 700;
+        border-radius: 6px;
+        border: 1px solid #A5AF9B;
+        background-color: #A5AF9B;
+        color: #3a501a;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+    .planner-actions button:hover {
+        background-color: #5F734C;
+        color: #FAF7F2;
+        border-color: #5F734C;
+    }
+
+    /* --- NEW: Styles for the save form --- */
+    .save-route-form {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #E8EBE4;
+    }
+    .save-route-form h3 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="page-header">
+    <h1>Route Planner</h1>
+    <p>Click on the map to start building your route.</p>
+  </div>
+
+  <div class="container">
+    <div class="planner-controls">
+        <div class="planner-stats">
+            <strong>Distance:</strong> <span id="distance">0.0</span> km | 
+            <strong>Elevation:</strong> <span id="elevation">0</span> m
+        </div>
+        <div class="planner-actions">
+            <button id="undo-btn">Undo Last Point</button>
+            <button id="clear-btn">Clear Route</button>
+        </div>
+    </div>
+    <div id="planner-map"></div>
+
+    <div class="save-route-form">
+        <h3>Save Your New Route</h3>
+        <form id="save-form" method="POST" action="">
+            <div class="form-group">
+                <label for="route-title" class="form-label">Route Title</label>
+                <input type="text" id="route-title" name="title" class="form-control" placeholder="e.g., Sunday Morning Loop" required>
+            </div>
+            <div class="form-group">
+                <label for="route-description" class="form-label">Description</label>
+                <textarea id="route-description" name="description" class="form-control" rows="4" placeholder="Add some details about your route..."></textarea>
+            </div>
+            <input type="hidden" id="route-data" name="route_data">
+            
+            <button type="submit" class="btn">Save Route</button>
+        </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js"></script>
+  
+  <script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+{% endblock %}

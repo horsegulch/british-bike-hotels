@@ -1,0 +1,15 @@
+flask
+python-dotenv
+requests
+Pillow
+staticmap
+werkzeug
+urllib3
+flask-pymongo
+pymongo
+flask-login
+flask-bcrypt
+flask-limiter
+geopy
+celery
+redis

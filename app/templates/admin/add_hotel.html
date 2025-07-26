@@ -1,0 +1,161 @@
+<!-- app/templates/admin/add_hotel.html -->
+
+{% extends "_layouts/base.html" %}
+
+{% block title %}Add New Hotel{% endblock %}
+
+{% block content %}
+<!-- Add padding-top (pt-24) to push content below the navbar -->
+<div class="w-[896px] mx-auto py-10 px-6 pt-24">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h1 class="font-poppins text-3xl font-bold text-slate-800 mb-6">Add New Hotel</h1>
+
+        <form method="POST" action="{{ url_for('admin.add_hotel') }}" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="grid grid-cols-1 gap-6">
+                <!-- Hotel Name -->
+                <div>
+                    <label for="{{ form.name.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.name.label }}</label>
+                    <div class="mt-1">
+                        {{ form.name(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                    {% if form.name.errors %}
+                        <ul class="text-sm text-red-600 mt-1">{% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="{{ form.description.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.description.label }}</label>
+                    <div class="mt-1">
+                        {{ form.description(rows=4, class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                    </div>
+                    {% if form.description.errors %}
+                        <ul class="text-sm text-red-600 mt-1">{% for error in form.description.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+
+                <!-- Location Picker -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 font-poppins">Select Location</label>
+                    <div id="location-picker-map" class="mt-1 w-full rounded-md border border-gray-300 relative bg-gray-100" data-jawg-token="{{ jawg_token }}">
+                        <!-- The map will be initialized here -->
+                    </div>
+                    {{ form.coordinates(class="hidden") }}
+                    {% if form.coordinates.errors %}
+                        <ul class="text-sm text-red-600 mt-1">{% for error in form.coordinates.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+
+                <!-- Website and Phone -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.website.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.website.label }}</label>
+                        <div class="mt-1">
+                             {{ form.website(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                        </div>
+                        {% if form.website.errors %}
+                           <ul class="text-sm text-red-600 mt-1">{% for error in form.website.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.phone.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.phone.label }}</label>
+                        <div class="mt-1">
+                             {{ form.phone(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm") }}
+                        </div>
+                        {% if form.phone.errors %}
+                           <ul class="text-sm text-red-600 mt-1">{% for error in form.phone.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Accommodation Type and Star Rating -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.accommodation_type.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.accommodation_type.label }}</label>
+                        <div class="mt-1">
+                            {{ form.accommodation_type(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ form.star_rating.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.star_rating.label }}</label>
+                        <div class="mt-1">
+                            {{ form.star_rating(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Price Range and Google Rating -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.price_range.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.price_range.label }}</label>
+                        <div class="mt-1">
+                            {{ form.price_range(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                     <div>
+                        <label for="{{ form.google_rating.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.google_rating.label }}</label>
+                        <div class="mt-1">
+                             {{ form.google_rating(class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm", placeholder="e.g., 4.5") }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facilities Checklist - DEFINITIVE FIX -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 font-poppins">{{ form.facilities.label }}</label>
+                    <div class="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-4 border p-4 rounded-md">
+                        <!-- Manually loop through choices to build checkboxes with full control -->
+                        {% for value, label in form.facilities.choices %}
+                        <div class="flex items-center">
+                            <input type="checkbox" name="facilities" value="{{ value }}" id="facilities-{{ value }}"
+                                   class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                                   {% if form.facilities.data and value in form.facilities.data %}checked{% endif %}>
+                            <label for="facilities-{{ value }}" class="ml-2 block text-sm text-gray-900">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+
+                <!-- is_featured and status -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                    <div class="flex items-center">
+                        {{ form.is_featured(class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded") }}
+                        <label for="{{ form.is_featured.id }}" class="ml-2 block text-sm text-gray-900 font-poppins">{{ form.is_featured.label }}</label>
+                    </div>
+                     <div>
+                        <label for="{{ form.status.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.status.label }}</label>
+                        <div class="mt-1">
+                            {{ form.status(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                        Add Hotel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+crossorigin=""/>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+crossorigin=""></script>
+
+<!-- Location Picker Script -->
+<script src="{{ url_for('static', filename='js/location_picker.js') }}"></script>
+{% endblock %}

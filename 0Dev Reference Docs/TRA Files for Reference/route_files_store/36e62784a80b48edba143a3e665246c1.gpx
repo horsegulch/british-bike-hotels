@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="The Ride Archive Planner" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>Testtetet</name>
+  </metadata>
+  <trk>
+    <name>Testtetet</name>
+    <trkseg>
+      <trkpt lat="52.68408" lon="-3.4365"></trkpt>
+      <trkpt lat="52.68332" lon="-3.43258"></trkpt>
+      <trkpt lat="52.68188" lon="-3.43587"></trkpt>
+      <trkpt lat="52.68045" lon="-3.43175"></trkpt>
+      <trkpt lat="52.67669" lon="-3.43341"></trkpt>
+      <trkpt lat="52.6752" lon="-3.41757"></trkpt>
+      <trkpt lat="52.67031" lon="-3.40245"></trkpt>
+      <trkpt lat="52.66943" lon="-3.38481"></trkpt>
+      <trkpt lat="52.66373" lon="-3.36744"></trkpt>
+      <trkpt lat="52.65972" lon="-3.36184"></trkpt>
+      <trkpt lat="52.66036" lon="-3.35432"></trkpt>
+      <trkpt lat="52.65477" lon="-3.3443"></trkpt>
+      <trkpt lat="52.65243" lon="-3.3435"></trkpt>
+      <trkpt lat="52.64917" lon="-3.32539"></trkpt>
+      <trkpt lat="52.64245" lon="-3.32959"></trkpt>
+      <trkpt lat="52.63605" lon="-3.32856"></trkpt>
+      <trkpt lat="52.6252" lon="-3.33203"></trkpt>
+      <trkpt lat="52.61308" lon="-3.32944"></trkpt>
+      <trkpt lat="52.6064" lon="-3.33784"></trkpt>
+      <trkpt lat="52.60182" lon="-3.33708"></trkpt>
+      <trkpt lat="52.60092" lon="-3.33101"></trkpt>
+      <trkpt lat="52.59849" lon="-3.3367"></trkpt>
+      <trkpt lat="52.58277" lon="-3.32936"></trkpt>
+      <trkpt lat="52.57513" lon="-3.33433"></trkpt>
+      <trkpt lat="52.57337" lon="-3.32879"></trkpt>
+      <trkpt lat="52.56477" lon="-3.31911"></trkpt>
+      <trkpt lat="52.5627" lon="-3.29708"></trkpt>
+      <trkpt lat="52.55358" lon="-3.29062"></trkpt>
+      <trkpt lat="52.5457" lon="-3.29504"></trkpt>
+      <trkpt lat="52.53531" lon="-3.26755"></trkpt>
+      <trkpt lat="52.53172" lon="-3.26624"></trkpt>
+      <trkpt lat="52.53006" lon="-3.25992"></trkpt>
+      <trkpt lat="52.52152" lon="-3.27119"></trkpt>
+      <trkpt lat="52.52779" lon="-3.26193"></trkpt>
+      <trkpt lat="52.52842" lon="-3.253"></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

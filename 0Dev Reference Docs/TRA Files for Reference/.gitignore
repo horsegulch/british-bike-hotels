@@ -1,0 +1,10 @@
+# Ignore the file containing secrets and other local files
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment folders (a common best practice)
+venv/
+.venv/

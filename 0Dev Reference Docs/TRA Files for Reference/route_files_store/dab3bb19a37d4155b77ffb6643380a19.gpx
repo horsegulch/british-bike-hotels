@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="The Ride Archive Planner" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>Brum to Bton</name>
+  </metadata>
+  <trk>
+    <name>Brum to Bton</name>
+    <trkseg>
+      <trkpt lat="52.48242" lon="-1.90191"></trkpt>
+      <trkpt lat="52.51151" lon="-1.86564"></trkpt>
+      <trkpt lat="52.50684" lon="-1.72403"></trkpt>
+      <trkpt lat="52.42496" lon="-1.71953"></trkpt>
+      <trkpt lat="52.34929" lon="-1.80767"></trkpt>
+      <trkpt lat="52.2133" lon="-1.49148"></trkpt>
+      <trkpt lat="52.08034" lon="-1.31993"></trkpt>
+      <trkpt lat="51.976" lon="-1.26191"></trkpt>
+      <trkpt lat="51.94784" lon="-1.20466"></trkpt>
+      <trkpt lat="51.86912" lon="-1.19869"></trkpt>
+      <trkpt lat="51.82819" lon="-1.11369"></trkpt>
+      <trkpt lat="51.79397" lon="-1.08631"></trkpt>
+      <trkpt lat="51.75801" lon="-1.10595"></trkpt>
+      <trkpt lat="51.73828" lon="-1.0929"></trkpt>
+      <trkpt lat="51.70207" lon="-0.99551"></trkpt>
+      <trkpt lat="51.6646" lon="-0.9509"></trkpt>
+      <trkpt lat="51.65648" lon="-0.90017"></trkpt>
+      <trkpt lat="51.62894" lon="-0.86822"></trkpt>
+      <trkpt lat="51.59659" lon="-0.63515"></trkpt>
+      <trkpt lat="51.54361" lon="-0.50511"></trkpt>
+      <trkpt lat="51.49216" lon="-0.49447"></trkpt>
+      <trkpt lat="51.40923" lon="-0.54073"></trkpt>
+      <trkpt lat="51.32797" lon="-0.47607"></trkpt>
+      <trkpt lat="51.30611" lon="-0.40457"></trkpt>
+      <trkpt lat="51.31512" lon="-0.33438"></trkpt>
+      <trkpt lat="51.25831" lon="-0.22363"></trkpt>
+      <trkpt lat="51.26275" lon="-0.12618"></trkpt>
+      <trkpt lat="51.11109" lon="-0.13814"></trkpt>
+      <trkpt lat="51.08571" lon="-0.19809"></trkpt>
+      <trkpt lat="51.06863" lon="-0.20477"></trkpt>
+      <trkpt lat="50.91111" lon="-0.1921"></trkpt>
+      <trkpt lat="50.89454" lon="-0.16285"></trkpt>
+      <trkpt lat="50.82066" lon="-0.136"></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

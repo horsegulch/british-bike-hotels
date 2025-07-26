@@ -1,0 +1,75 @@
+<!-- app/templates/index.html -->
+
+{% extends "_layouts/base.html" %}
+
+{% block content %}
+<!-- Welcome Modal -->
+<div id="welcomeModal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 relative transform transition-all scale-95 opacity-0" id="modalContent">
+        <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <h2 class="font-poppins text-2xl font-bold text-slate-800 mb-4">Welcome to BritishBikeHotels.com</h2>
+        <p class="font-lora text-gray-600 mb-6">
+            Your next cycling adventure starts here. Discover the best cyclist-friendly hotels across the UK, complete with curated routes right from their doorstep.
+        </p>
+        <button id="exploreMapBtn" class="w-full bg-amber-400 text-slate-800 font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-amber-500 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out">
+            Explore The Map
+        </button>
+    </div>
+</div>
+
+<!-- Main Map Container -->
+<div class="relative">
+    <div id="map" class="h-[80vh] w-full z-0" data-jawg-token="{{ jawg_token }}"></div>
+</div>
+
+<!-- Latest Posts Section -->
+<div class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="font-poppins text-3xl font-bold text-slate-800">From The Journal</h2>
+            <p class="font-lora text-gray-500 mt-2">The latest news, tips, and regional guides.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in latest_posts %}
+            <a href="{{ url_for('blog.post', slug=post.slug) }}" class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                <div class="h-48 bg-slate-200">
+                    <img src="https://placehold.co/600x400/2c3e50/f8f9fa?text={{ post.title | urlencode }}" alt="Blog post image for {{ post.title }}" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6">
+                    <h3 class="font-poppins text-xl font-bold text-slate-800 group-hover:text-amber-500 transition-colors duration-200">{{ post.title }}</h3>
+                    <p class="font-lora text-sm text-gray-600 mt-2">{{ post.summary }}</p>
+                </div>
+            </a>
+            {% else %}
+            <p class="col-span-3 text-center text-gray-500">No blog posts yet.</p>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-12">
+            <a href="{{ url_for('blog.index') }}" class="bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transition-colors">
+                Visit The Blog
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_extra %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" xintegrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+
+<!-- Leaflet Marker Cluster CSS (Both files are needed) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" xintegrity="sha512-VCFaClMLkeGOsbe/2MDCrzcibVGFZcNGbWC1GG/mDX5eQMWqJ8SRG7DS7iunydB/GilvikdenWSRnSp7HkGB/gA==" crossorigin=""/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" xintegrity="sha512-s3SjImBEzFNMzAjcoY5FfPTLmyI2g1pYvpyNvt+vUf+2/K+LzIQC/2sT2/tWpS02c/qL/4xOPIvQf3/k0Lg2w==" crossorigin=""/>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" xintegrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+<!-- Leaflet Marker Cluster JS -->
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" xintegrity="sha512-QlyB+BIeD/2L+gZIZWj2q2/hVjN2o+v+H/G+qVlGnDkOaRz/JcW8C1c/bUa7bQgoN/Bz03m/h2M2sB8j5c3gA==" crossorigin=""></script>
+
+<!-- Custom Scripts with defer attribute -->
+<script src="{{ url_for('static', filename='js/map.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/welcome.js') }}" defer></script>
+{% endblock %}
