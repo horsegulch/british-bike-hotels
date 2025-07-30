@@ -1,0 +1,124 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}Hotel Onboarding - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-lg">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold font-poppins text-slate-800">Complete Your Hotel Profile</h1>
+                <p class="font-lora text-slate-600 mt-2">
+                    Please provide the following details. This information will be used to create your public profile on BritishBikeHotels.com after review.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('main.onboarding', token=token) }}" class="mt-8 space-y-6" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+
+                <div>
+                    <label class="block text-sm font-medium font-poppins text-slate-700">Subscription Plan</label>
+                    <div class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-slate-300 rounded-md shadow-sm">
+                        <p class="text-slate-700 font-semibold capitalize">{{ plan }}</p>
+                    </div>
+                </div>
+
+                <!-- Text-based fields -->
+                <div>
+                    <label for="{{ form.hotel_name.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.hotel_name.label }}</label>
+                    {{ form.hotel_name(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+                <div>
+                    <label for="{{ form.description.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.description.label }}</label>
+                    {{ form.description(rows=4, class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+                
+                <!-- Location Picker Map -->
+                <div>
+                    <label class="block text-sm font-medium font-poppins text-slate-700">Select Hotel Location</label>
+                    <p class="text-xs font-lora text-slate-500 mb-2">Search for your address or click directly on the map to place the pin.</p>
+                    <div id="location-picker-map" style="height: 400px;" class="mt-1 w-full rounded-md border border-gray-300 relative bg-gray-100" data-jawg-token="{{ jawg_token }}">
+                        <!-- The map will be initialized here by location_picker.js -->
+                    </div>
+                    {% if form.coordinates.errors %}
+                        <ul class="text-sm text-red-600 mt-1">{% for error in form.coordinates.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.website.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.website.label }}</label>
+                    {{ form.website(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+                <div>
+                    <label for="{{ form.phone_number.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.phone_number.label }}</label>
+                    {{ form.phone_number(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+                <div>
+                    <label for="{{ form.accommodation_type.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.accommodation_type.label }}</label>
+                    {{ form.accommodation_type(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+
+                <!-- Facilities Checkboxes -->
+                <div>
+                    <label class="block text-sm font-medium font-poppins text-slate-700">{{ form.facilities.label }}</label>
+                    <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border border-slate-300 p-4 rounded-md">
+                        {% for value, label in form.facilities.choices %}
+                        <div class="flex items-center">
+                            <input type="checkbox" name="facilities" value="{{ value }}" id="facilities-{{ value }}"
+                                   class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+                            <label for="facilities-{{ value }}" class="ml-2 block text-sm font-lora text-slate-700">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                 <div>
+                    <label for="{{ form.photos.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.photos.label }}</label>
+                    {{ form.photos(class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100") }}
+                </div>
+                <div>
+                    <label for="{{ form.routes.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.routes.label }}</label>
+                    {{ form.routes(class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100") }}
+                </div>
+                <div>
+                    {{ form.submit(class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold font-poppins text-white bg-slate-800 hover:bg-slate-700 cursor-pointer") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+
+<div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-[2000] flex-col items-center justify-center p-4 hidden">
+    <div class="w-16 h-16 border-4 border-t-amber-400 border-gray-200 rounded-full animate-spin"></div>
+    <p class="text-white font-poppins mt-4">Submitting, please wait...</p>
+</div>
+
+{% endblock %}
+
+{% block body_extra %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<!-- Your existing location picker script -->
+<script src="{{ url_for('static', filename='js/location_picker.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const overlay = document.getElementById('loading-overlay');
+        
+        if (form && overlay) {
+            form.addEventListener('submit', function() {
+                overlay.style.display = 'flex';
+            });
+        }
+    });
+</script>
+
+{% endblock %}

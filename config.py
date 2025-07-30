@@ -23,8 +23,19 @@ class Config:
     # The MongoDB URI is also loaded from an environment variable.
     MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/britishbikehotels')
     
+    JAWG_TOKEN = os.environ.get('JAWG_ACCESS_TOKEN')
+
+
     # Flask-PyMongo specific settings can be added here if needed,
     # for example, app.config['MONGO_DBNAME'] = 'britishbikehotels'
+
+    # ADD THESE NEW EMAIL SETTINGS
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in ['true', 'on', '1']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') # Reads 'MAIL_USERNAME' from .env [cite: 1]
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') # Reads 'MAIL_PASSWORD' from .env [cite: 1]
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', MAIL_USERNAME)
 
     @staticmethod
     def init_app(app):

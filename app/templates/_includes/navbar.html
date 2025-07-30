@@ -20,10 +20,14 @@
             <div class="hidden md:block flex-shrink-0">
                 <div class="flex items-baseline space-x-4">
                     <a href="{{ url_for('blog.index') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Blog</a>
+                    <a href="{{ url_for('main.pricing') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">For Hotels</a>
                     {% if current_user.is_authenticated %}
                         <a href="{{ url_for('admin.dashboard') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin Dashboard</a>
                         <a href="{{ url_for('auth.logout') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Logout</a>
                     {% endif %}
+                    <button id="showWelcomeBtn" type="button" class="text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded-full text-sm font-medium" title="Show welcome message">
+        <i class="fas fa-info-circle fa-lg"></i>
+    </button>
                 </div>
             </div>
 

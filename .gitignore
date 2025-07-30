@@ -37,3 +37,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Ignore user-uploaded media
+app/static/uploads/hotel_photos/
+app/static/uploads/routes/

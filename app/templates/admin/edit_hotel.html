@@ -97,19 +97,22 @@
                     </div>
                 </div>
 
-                <!-- is_featured and status -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-                    <div class="flex items-center">
-                        {{ form.is_featured(class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded") }}
-                        <label for="{{ form.is_featured.id }}" class="ml-2 block text-sm text-gray-900 font-poppins">{{ form.is_featured.label }}</label>
-                    </div>
-                     <div>
-                        <label for="{{ form.status.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.status.label }}</label>
-                        <div class="mt-1">
-                            {{ form.status(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
-                        </div>
+                <!-- Plan and Status -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.plan.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.plan.label }}</label>
+                    <div class="mt-1">
+                        {{ form.plan(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
                     </div>
                 </div>
+                <div>
+                    <label for="{{ form.status.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.status.label }}</label>
+                    <div class="mt-1">
+                        {{ form.status(class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm rounded-md") }}
+                    </div>
+                </div>
+            </div>
+
                 <!-- Submit Button -->
                 <div class="pt-4">
                     <button type="submit" class="w-full bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">

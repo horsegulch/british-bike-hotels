@@ -28,7 +28,11 @@ class AddHotelForm(FlaskForm):
     ])
     website = StringField('Website', validators=[DataRequired(), URL()])
     phone = StringField('Phone Number', validators=[Optional()])
-    is_featured = BooleanField('Mark as Featured')
+    plan = SelectField('Subscription Plan', choices=[
+        ('standard', 'Standard'),
+        ('premium', 'Premium')
+    ], validators=[DataRequired()])
+
     status = SelectField('Status', choices=[('approved', 'Approved'), ('pending', 'Pending'), ('offline', 'Offline')], validators=[DataRequired()])
 
     # --- NEW FIELDS FOR FILTERING ---
@@ -92,3 +96,12 @@ class EditRouteForm(FlaskForm):
     # The GPX file is now optional when editing
     gpx_file = FileField('Upload New GPX File (Optional)', validators=[FileAllowed(['gpx'], 'GPX files only!')])
     submit = SubmitField('Save Changes')
+
+class InviteHotelForm(FlaskForm):
+    """Form for admin to generate an onboarding token for a hotel."""
+    hotel_name = StringField('Hotel Name', validators=[DataRequired()])
+    plan = SelectField('Subscription Plan', choices=[
+        ('standard', 'Standard'),
+        ('premium', 'Premium')
+    ], validators=[DataRequired()])
+    submit = SubmitField('Generate Invitation Link')

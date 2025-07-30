@@ -1,0 +1,63 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}Hotel Sign-up - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-xl mx-auto bg-white p-8 sm:p-12 rounded-2xl shadow-lg">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold font-poppins text-slate-800">Hotel Sign-up</h1>
+                <p class="font-lora text-slate-600 mt-2">
+                    You've selected the <strong class="font-bold capitalize">{{ plan }} Plan</strong>.
+                    Complete the form below to get started.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('main.signup', plan=plan) }}" class="mt-8 space-y-6">
+                {{ form.hidden_tag() }} <div>
+                    <label for="{{ form.hotel_name.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.hotel_name.label }}</label>
+                    {{ form.hotel_name(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                    {% for error in form.hotel_name.errors %}
+                        <span class="text-xs text-red-600">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label for="{{ form.contact_name.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.contact_name.label }}</label>
+                    {{ form.contact_name(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                    {% for error in form.contact_name.errors %}
+                        <span class="text-xs text-red-600">{{ error }}</span>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    <label for="{{ form.email.id }}" class="block text-sm font-medium font-poppins text-slate-700">{{ form.email.label }}</label>
+                    {{ form.email(class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                     {% for error in form.email.errors %}
+                        <span class="text-xs text-red-600">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        {{ form.terms_agreed(class="focus:ring-amber-500 h-4 w-4 text-amber-600 border-gray-300 rounded") }}
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="{{ form.terms_agreed.id }}" class="font-lora text-slate-600">
+                            I agree to the <a href="{{ url_for('main.terms') }}" target="_blank" class="font-medium text-amber-600 hover:underline">Terms and Conditions</a>.
+                        </label>
+                         {% for error in form.terms_agreed.errors %}
+                            <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.submit(class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold font-poppins text-slate-800 bg-amber-400 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 cursor-pointer") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

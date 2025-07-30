@@ -5,6 +5,7 @@ from markupsafe import Markup  # Corrected import
 from flask_pymongo import PyMongo
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail
 from config import config
 import markdown
 
@@ -13,6 +14,7 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
+mail = Mail()
 
 def create_app(config_name):
     """
@@ -26,6 +28,7 @@ def create_app(config_name):
     mongo.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
+    mail.init_app(app)
     
     # MOVED: These are moved inside the factory to prevent circular imports
     from .models import User

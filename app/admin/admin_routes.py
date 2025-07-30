@@ -2,11 +2,13 @@
 
 import os
 import shortuuid
+import secrets
+import datetime
 from flask import render_template, request, flash, redirect, url_for, current_app, abort
 from flask_login import login_required
 from . import admin
 from .. import mongo
-from .forms import AddHotelForm, AddRouteForm, EditRouteForm
+from .forms import AddHotelForm, AddRouteForm, EditRouteForm, InviteHotelForm
 from ..utils.gpx_utils import parse_gpx_file
 from werkzeug.utils import secure_filename
 
@@ -41,6 +43,9 @@ def add_hotel():
             'phone': form.phone.data,
             'location': {'type': 'Point', 'coordinates': coords_list},
             'is_featured': form.is_featured.data,
+            'plan': form.plan.data,
+            'is_featured': form.plan.data == 'premium',
+            'plan': form.plan.data,
             'status': form.status.data,
             # --- SAVING NEW FIELDS ---
             'accommodation_type': form.accommodation_type.data,
@@ -72,18 +77,22 @@ def edit_hotel(hotel_id):
             'website': form.website.data,
             'phone': form.phone.data,
             'location': {'type': 'Point', 'coordinates': coords_list},
-            'is_featured': form.is_featured.data,
+            'plan': form.plan.data,
             'status': form.status.data,
-            # --- UPDATING NEW FIELDS ---
             'accommodation_type': form.accommodation_type.data,
             'star_rating': form.star_rating.data,
             'price_range': form.price_range.data,
             'google_rating': float(form.google_rating.data) if form.google_rating.data else None,
-            'facilities': form.facilities.data
+            'facilities': form.facilities.data,
+            # This line now correctly derives 'is_featured' from the plan
+            'is_featured': form.plan.data == 'premium'
         }
+
         mongo.db.hotels.update_one({'_id': hotel_id}, {'$set': update_data})
         flash('Hotel updated successfully!', 'success')
         return redirect(url_for('admin.manage_hotels'))
+
+        form.plan.data = hotel.get('plan', 'standard')
 
     # Pre-populate coordinates manually
     form.coordinates.data = f"{hotel['location']['coordinates'][0]}, {hotel['location']['coordinates'][1]}"
@@ -135,10 +144,10 @@ def add_route(hotel_id):
             'description': form.description.data,
             'surface_type': form.surface_type.data,
             'gpx_file_path': os.path.join('uploads', 'routes', filename).replace("\\", "/"), # Store relative path
-            'distance_km': route_data['distance_km'],
-            'elevation_m': route_data['elevation_gain_m'],
-            'difficulty': route_data['difficulty'],
-            'status': 'active' # Default status
+            'distance_km': route_data.get('distance_km', 0),
+            'elevation_m': route_data.get('elevation_gain_m', 0), # Use .get() with a default of 0
+            'difficulty': route_data.get('difficulty', 'moderate'), # Use .get() with a default
+            'status': 'active'
         }
         mongo.db.routes.insert_one(new_route)
         flash('Route added successfully!', 'success')
@@ -171,9 +180,9 @@ def edit_route(route_id):
                 route_data = parse_gpx_file(f)
             
             update_data['gpx_file_path'] = os.path.join('uploads', 'routes', filename).replace("\\", "/")
-            update_data['distance_km'] = route_data['distance_km']
-            update_data['elevation_m'] = route_data['elevation_gain_m']
-            update_data['difficulty'] = route_data['difficulty']
+            update_data['distance_km'] = route_data.get('distance_km', 0)
+            update_data['elevation_m'] = route_data.get('elevation_m', 0) # Use .get()
+            update_data['difficulty'] = route_data.get('difficulty', 'moderate') # Use .get()
 
         mongo.db.routes.update_one({'_id': route_id}, {'$set': update_data})
         flash('Route updated successfully!', 'success')
@@ -242,3 +251,31 @@ def delete_post(post_id):
     mongo.db.blog_posts.delete_one({'_id': post_id})
     flash('Blog post deleted permanently.', 'success')
     return redirect(url_for('admin.manage_posts'))
+
+@admin.route('/invite-hotel', methods=['GET', 'POST'])
+@login_required
+def invite_hotel():
+    form = InviteHotelForm()
+    invitation_link = None
+    if form.validate_on_submit():
+        hotel_name = form.hotel_name.data
+        plan = form.plan.data # Get the plan from the form
+        token = secrets.token_urlsafe(16)
+
+        mongo.db.onboarding_tokens.insert_one({
+            'token': token,
+            'hotel_name': hotel_name,
+            'plan': plan, # Store the plan with the token
+            'status': 'unused',
+            'created_at': datetime.datetime.utcnow()
+        })
+        
+        invitation_link = url_for('main.onboarding', token=token, _external=True)
+        flash(f'Invitation link generated for {hotel_name} ({plan.capitalize()}).', 'success')
+    
+    # ... rest of the function ...
+
+    # Fetch all existing, unused tokens to display on the page
+    tokens = list(mongo.db.onboarding_tokens.find({'status': 'unused'}).sort('created_at', -1))
+    
+    return render_template('admin/invite_hotel.html', form=form, invitation_link=invitation_link, tokens=tokens)

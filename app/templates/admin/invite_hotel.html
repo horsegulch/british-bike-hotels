@@ -1,0 +1,51 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}Invite New Hotel{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-10 pt-24">
+    <h1 class="font-poppins text-3xl font-bold text-slate-800 mb-6">Invite a New Hotel</h1>
+    
+    <!-- Form to generate a new token -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="font-poppins text-2xl font-bold text-slate-800 mb-4">Generate New Link</h2>
+        <form method="POST" action="{{ url_for('admin.invite_hotel') }}">
+            {{ form.hidden_tag() }}
+            <div class="flex items-end space-x-4">
+                <div class="flex-grow">
+                    <label for="{{ form.hotel_name.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.hotel_name.label }}</label>
+                    {{ form.hotel_name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+                </div>
+                <div class="flex-grow">
+            <label for="{{ form.plan.id }}" class="block text-sm font-medium text-gray-700 font-poppins">{{ form.plan.label }}</label>
+            {{ form.plan(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500") }}
+        </div>
+                <div>
+                    {{ form.submit(class="bg-slate-800 text-white font-poppins font-bold py-2 px-6 rounded-lg shadow-md hover:bg-slate-700") }}
+                </div>
+            </div>
+        </form>
+        
+        {% if invitation_link %}
+        <div class="mt-6 bg-amber-50 border-l-4 border-amber-400 p-4">
+            <p class="font-poppins font-semibold text-amber-800">Share this secure link with the hotel:</p>
+            <input type="text" value="{{ invitation_link }}" class="mt-2 w-full bg-white p-2 border border-amber-300 rounded" readonly onclick="this.select()">
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- List of unused tokens -->
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="font-poppins text-2xl font-bold text-slate-800 mb-4">Pending Invitations</h2>
+        {% if tokens %}
+        <ul class="space-y-3">
+            {% for token in tokens %}
+            <li class="font-lora text-slate-700 p-2 bg-gray-50 rounded">{{ token.hotel_name }} - <span class="text-xs text-gray-500">Created: {{ token.created_at.strftime('%d %b %Y') }}</span></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="font-lora text-slate-500">No pending invitations.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

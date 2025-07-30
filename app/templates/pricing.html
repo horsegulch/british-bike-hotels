@@ -1,0 +1,72 @@
+{% extends "_layouts/base.html" %}
+
+{% block title %}For Hotels - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="bg-slate-800">
+    <div class="container mx-auto px-4 py-20 text-center text-white">
+        <h1 class="text-4xl md:text-5xl font-bold font-poppins mb-4">Join the UK's Premier Collection of Bike-Friendly Hotels</h1>
+        <p class="text-lg md:text-xl font-lora text-slate-300 max-w-3xl mx-auto">Connect with thousands of passionate cyclists looking for their next adventure. Get listed today and put your hotel on the map.</p>
+    </div>
+</div>
+
+<div class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+
+        <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12 border-2 border-amber-400 text-center mb-16">
+            <h2 class="text-3xl font-bold font-poppins text-slate-800">Founder's Offer: Your First 12 Months Free!</h2>
+            <p class="font-lora text-slate-600 mt-4 max-w-2xl mx-auto">
+                To celebrate our launch, sign up before <strong class="font-bold text-amber-500">30th November 2025</strong> to get
+                <strong>12 months of our Standard plan for free</strong>, or <strong>50% off your first year</strong> on our Premium plan!
+            </p>
+            <a href="#pricing-plans" class="mt-6 inline-block bg-amber-400 text-slate-800 font-poppins font-bold py-3 px-8 rounded-lg shadow-md hover:bg-amber-500 transform hover:-translate-y-0.5 transition-all duration-200 ease-in-out">
+                Choose Your Plan
+            </a>
+        </div>
+
+        <div id="pricing-plans" class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col">
+        <h3 class="font-poppins text-2xl font-bold text-slate-800">Standard</h3>
+        <div class="font-poppins text-4xl font-bold text-slate-800 mt-4">
+            <s>£50</s> FREE<span class="text-lg font-medium text-slate-500">/year (+vat)</span>
+        </div>
+        <p class="font-lora text-slate-600 mt-2">For your 12-month free period (then £50/year). Essential visibility to get you started.</p>
+        <ul class="font-lora text-slate-600 space-y-3 mt-8 flex-grow">
+            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mr-3 mt-1"></i><span>Standard listing in search results</span></li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mr-3 mt-1"></i><span>Standard map marker icon</span></li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mr-3 mt-1"></i><span>Host up to 3 hotel-provided routes (GPX files)</span></li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-green-500 mr-3 mt-1"></i><span>Profile page with photos, description, and details</span></li>
+        </ul>
+        <a href="{{ url_for('main.signup', plan='standard') }}" class="mt-8 block text-center bg-slate-800 text-white font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-slate-700 transition-colors">Sign Up for Free</a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 flex flex-col border-2 border-amber-400 relative">
+        <span class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-800 font-poppins font-bold text-sm px-4 py-1 rounded-full uppercase">Most Popular</span>
+        <h3 class="font-poppins text-2xl font-bold text-slate-800">Premium</h3>
+        <div class="font-poppins text-4xl font-bold text-slate-800 mt-4">
+            <s>£150</s> £75<span class="text-lg font-medium text-slate-500">/year (+vat)</span>
+        </div>
+        <p class="font-lora text-slate-600 mt-2">For your 12-month discounted period (then £150/year). Maximum visibility and enhanced features.</p>
+        <ul class="font-lora text-slate-600 space-y-3 mt-8 flex-grow">
+            <li class="flex items-start"><i class="fa-solid fa-check text-amber-500 mr-3 mt-1"></i><span class="font-bold">Gold, high-visibility</span> map icon</li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-amber-500 mr-3 mt-1"></i><span class="font-bold">"Premium" tag</span> in all listings</li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-amber-500 mr-3 mt-1"></i><span><strong>Unlimited</strong> route hosting</span></li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-amber-500 mr-3 mt-1"></i><span>A dedicated <strong>feature blog post</strong> about your hotel</span></li>
+            <li class="flex items-start"><i class="fa-solid fa-check text-amber-500 mr-3 mt-1"></i><span>Includes <strong>2 professionally created routes</strong> by our team</span></li>
+        </ul>
+        <a href="{{ url_for('main.signup', plan='premium') }}" class="mt-8 block text-center bg-amber-400 text-slate-800 font-poppins font-bold py-3 px-6 rounded-lg shadow-md hover:bg-amber-500 transition-colors">Sign Up & Go Premium</a>
+    </div>
+</div>
+
+        <div class="text-center mt-16">
+             <h3 class="font-poppins text-2xl font-bold text-slate-800">Need Help With Routes?</h3>
+             <p class="font-lora text-slate-600 mt-2">We also offer a standalone route creation service to help you showcase the best cycling in your area. Our team have 15 years experience of planning routes for leading tour operators and events across the UK and Europe. We use the best GPS tools and include supporting information, such as points of interest, difficulty ratings and support guides.</p>
+             <div class="font-poppins text-3xl font-bold text-slate-800 mt-4">
+                 £50<span class="text-lg font-medium text-slate-500"> / route</span>
+             </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
